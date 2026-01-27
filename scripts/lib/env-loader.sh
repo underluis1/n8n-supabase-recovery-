@@ -94,7 +94,7 @@ build_compose_command() {
     # Aggiungi profiles
     for profile in "${profiles[@]}"; do
         cmd="$cmd --profile $profile"
-    fi
+    done
 
     # Aggiungi file env
     cmd="$cmd --env-file environments/${environment}/.env"
