@@ -97,7 +97,9 @@ select_services() {
     echo "  5) Tutto (n8n + Supabase + backup)"
     echo ""
     echo -n "Scelta [5]: "
-    read -r service_choice
+    if ! read -r service_choice; then
+        service_choice=5
+    fi
     service_choice=${service_choice:-5}
 
     case $service_choice in
@@ -252,13 +254,9 @@ create_env_file() {
     mkdir -p "$ENV_DIR"
 
     if [[ -f "$ENV_FILE" ]]; then
-        if confirm "File .env già esistente. Sovrascrivere?"; then
-            log_warning "Backup vecchia configurazione: ${ENV_FILE}.backup"
-            cp "$ENV_FILE" "${ENV_FILE}.backup"
-        else
-            log_info "Mantenuta configurazione esistente"
-            return 0
-        fi
+        log_warning "Backup vecchia configurazione: ${ENV_FILE}.backup"
+        cp "$ENV_FILE" "${ENV_FILE}.backup"
+        log_info "File .env esistente sarà sovrascritto"
     fi
 
     log_info "Creazione: $ENV_FILE"
@@ -478,16 +476,10 @@ offer_start() {
 
     log_success "Setup completato con successo!"
     echo ""
-
-    if confirm "Vuoi avviare i servizi ora?" "y"; then
-        log_info "Avvio servizi..."
-        ./platform.sh up "$ENVIRONMENT"
-    else
-        log_info "Per avviare manualmente:"
-        echo ""
-        echo "  ./platform.sh up $ENVIRONMENT"
-        echo ""
-    fi
+    log_info "Per avviare i servizi:"
+    echo ""
+    echo "  ./platform.sh up $ENVIRONMENT"
+    echo ""
 }
 
 # =============================================================================

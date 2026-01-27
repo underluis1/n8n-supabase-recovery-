@@ -92,7 +92,9 @@ confirm() {
     fi
 
     echo -ne "${COLOR_YELLOW}? ${message} ${prompt}:${COLOR_RESET} "
-    read -r response
+    if ! read -r response; then
+        response=$default_value
+    fi
     response=${response:-$default_value}
 
     if [[ "$response" =~ ^[Yy]$ ]]; then
