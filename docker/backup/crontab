@@ -1,0 +1,5 @@
+# Backup crontab
+# Schedule viene letto da variabile d'ambiente BACKUP_SCHEDULE
+# Default: 0 2 * * * (2 AM every day)
+
+# Il cron job viene configurato dinamicamente dall'entrypoint

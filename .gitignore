@@ -1,0 +1,41 @@
+# Environment files
+environments/**/.env
+.env
+.env.local
+.env.*.local
+
+# State files (opzionale - commentare se vuoi versionare lo stato)
+environments/**/state.json
+
+# Backups
+backups/
+*.sql
+*.sql.gz
+
+# Docker volumes
+docker/n8n/data/
+docker/supabase/volumes/db/data/
+docker/supabase/volumes/storage/
+
+# rclone config (contiene credentials)
+docker/backup/rclone/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/

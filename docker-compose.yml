@@ -1,0 +1,321 @@
+version: '3.8'
+
+# =============================================================================
+# LOCAL PLATFORM KIT - Docker Compose Configuration
+# =============================================================================
+# Usa profiles per abilitare/disabilitare servizi:
+# - n8n: Automation platform
+# - supabase: Backend as a Service
+# - backup: Sistema di backup automatico
+
+networks:
+  platform-network:
+    name: ${NETWORK_NAME:-platform-network}
+    driver: bridge
+
+volumes:
+  # N8N Volumes
+  n8n-postgres-data:
+    name: ${VOLUME_PREFIX:-platform}_n8n_postgres_data
+
+  # Supabase Volumes
+  supabase-db-data:
+    name: ${VOLUME_PREFIX:-platform}_supabase_db_data
+  supabase-storage-data:
+    name: ${VOLUME_PREFIX:-platform}_supabase_storage_data
+  supabase-kong-data:
+    name: ${VOLUME_PREFIX:-platform}_supabase_kong_data
+
+# =============================================================================
+# SERVICES
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # N8N - Automation Platform
+  # ---------------------------------------------------------------------------
+
+  n8n-postgres:
+    image: postgres:15-alpine
+    container_name: ${PROJECT_NAME:-platform}-n8n-postgres
+    profiles: ["n8n"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      POSTGRES_USER: ${N8N_DB_POSTGRESDB_USER}
+      POSTGRES_PASSWORD: ${N8N_DB_POSTGRESDB_PASSWORD}
+      POSTGRES_DB: ${N8N_DB_POSTGRESDB_DATABASE}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - n8n-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${N8N_DB_POSTGRESDB_USER} -d ${N8N_DB_POSTGRESDB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: ${PROJECT_NAME:-platform}-n8n
+    profiles: ["n8n"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${N8N_DB_POSTGRESDB_HOST}
+      - DB_POSTGRESDB_PORT=${N8N_DB_POSTGRESDB_PORT}
+      - DB_POSTGRESDB_DATABASE=${N8N_DB_POSTGRESDB_DATABASE}
+      - DB_POSTGRESDB_USER=${N8N_DB_POSTGRESDB_USER}
+      - DB_POSTGRESDB_PASSWORD=${N8N_DB_POSTGRESDB_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - WEBHOOK_URL=${N8N_PROTOCOL}://localhost:${N8N_PORT}/
+      - GENERIC_TIMEZONE=Europe/Rome
+    volumes:
+      - ./docker/n8n/data:/home/node/.n8n
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # SUPABASE - Backend as a Service
+  # ---------------------------------------------------------------------------
+
+  supabase-db:
+    image: supabase/postgres:15.1.1.78
+    container_name: ${PROJECT_NAME:-platform}-supabase-db
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./docker/supabase/volumes/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  supabase-studio:
+    image: supabase/studio:20240729-ce42139
+    container_name: ${PROJECT_NAME:-platform}-supabase-studio
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    ports:
+      - "${SUPABASE_STUDIO_PORT:-3000}:3000"
+    environment:
+      SUPABASE_URL: ${SUPABASE_PUBLIC_URL}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-kong:
+    image: kong:2.8.1
+    container_name: ${PROJECT_NAME:-platform}-supabase-kong
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    ports:
+      - "${SUPABASE_KONG_HTTP_PORT:-8000}:8000"
+      - "${SUPABASE_KONG_HTTPS_PORT:-8443}:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
+    volumes:
+      - ./docker/supabase/volumes/kong:/var/lib/kong:ro
+    depends_on:
+      - supabase-auth
+      - supabase-rest
+      - supabase-realtime
+      - supabase-storage
+
+  supabase-auth:
+    image: supabase/gotrue:v2.151.0
+    container_name: ${PROJECT_NAME:-platform}-supabase-auth
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${SUPABASE_PUBLIC_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@supabase-db:5432/${POSTGRES_DB}?search_path=auth
+      GOTRUE_SITE_URL: ${SUPABASE_PUBLIC_URL}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_DISABLE_SIGNUP: "false"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-rest:
+    image: postgrest/postgrest:v12.0.1
+    container_name: ${PROJECT_NAME:-platform}-supabase-rest
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      PGRST_DB_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@supabase-db:5432/${POSTGRES_DB}
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-realtime:
+    image: supabase/realtime:v2.25.50
+    container_name: ${PROJECT_NAME:-platform}-supabase-realtime
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      PORT: 4000
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
+      DB_ENC_KEY: supabaserealtime
+      API_JWT_SECRET: ${JWT_SECRET}
+      FLY_ALLOC_ID: fly123
+      FLY_APP_NAME: realtime
+      SECRET_KEY_BASE: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
+      ERL_AFLAGS: -proto_dist inet_tcp
+      ENABLE_TAILSCALE: "false"
+      DNS_NODES: "''"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    command: >
+      sh -c "/app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server"
+
+  supabase-storage:
+    image: supabase/storage-api:v0.43.11
+    container_name: ${PROJECT_NAME:-platform}-supabase-storage
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://supabase-rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@supabase-db:5432/${POSTGRES_DB}
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: ${SUPABASE_STORAGE_BACKEND}
+      FILE_STORAGE_BACKEND_PATH: ${SUPABASE_STORAGE_FILE_PATH}
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+    volumes:
+      - supabase-storage-data:/var/lib/storage
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+      supabase-rest:
+        condition: service_started
+
+  supabase-meta:
+    image: supabase/postgres-meta:v0.80.0
+    container_name: ${PROJECT_NAME:-platform}-supabase-meta
+    profiles: ["supabase"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: ${POSTGRES_DB}
+      PG_META_DB_USER: ${POSTGRES_USER}
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # BACKUP - Sistema di Backup Automatico
+  # ---------------------------------------------------------------------------
+
+  backup:
+    build:
+      context: ./docker/backup
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME:-platform}-backup
+    profiles: ["backup"]
+    restart: unless-stopped
+    networks:
+      - platform-network
+    environment:
+      # N8N Backup
+      N8N_ENABLED: ${N8N_ENABLED:-false}
+      N8N_DB_HOST: ${N8N_DB_POSTGRESDB_HOST}
+      N8N_DB_PORT: ${N8N_DB_POSTGRESDB_PORT}
+      N8N_DB_DATABASE: ${N8N_DB_POSTGRESDB_DATABASE}
+      N8N_DB_USER: ${N8N_DB_POSTGRESDB_USER}
+      N8N_DB_PASSWORD: ${N8N_DB_POSTGRESDB_PASSWORD}
+
+      # Supabase Backup
+      SUPABASE_ENABLED: ${SUPABASE_ENABLED:-false}
+      SUPABASE_DB_HOST: supabase-db
+      SUPABASE_DB_PORT: 5432
+      SUPABASE_DB_DATABASE: ${POSTGRES_DB}
+      SUPABASE_DB_USER: ${POSTGRES_USER}
+      SUPABASE_DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # Backup Settings
+      BACKUP_SCHEDULE: ${BACKUP_SCHEDULE}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS}
+      BACKUP_LOCAL_PATH: /backups
+
+      # Google Drive
+      BACKUP_GDRIVE_ENABLED: ${BACKUP_GDRIVE_ENABLED:-false}
+      BACKUP_GDRIVE_REMOTE_NAME: ${BACKUP_GDRIVE_REMOTE_NAME}
+      BACKUP_GDRIVE_FOLDER: ${BACKUP_GDRIVE_FOLDER}
+
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+      - ./backups:/backups
+      - ./docker/backup/rclone:/root/.config/rclone:ro
+    depends_on:
+      - n8n-postgres
+      - supabase-db

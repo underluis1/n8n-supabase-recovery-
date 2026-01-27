@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!docker/*/README.md
+
+# Environments
+environments/
+
+# Backups
+backups/
+
+# Logs
+*.log
+logs/
+
+# Migrations (not needed in containers)
+migrations/
+
+# Scripts (except those needed in container)
+scripts/
+!docker/backup/*.sh
+
+# Config files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
