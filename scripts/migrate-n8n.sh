@@ -47,9 +47,8 @@ wait_for_n8n() {
     log_info "Attesa avvio n8n..."
 
     while [[ $attempt -lt $max_attempts ]]; do
-        if curl -s -f \
-            -u "${N8N_BASIC_AUTH_USER}:${N8N_BASIC_AUTH_PASSWORD}" \
-            "http://localhost:${N8N_PORT}/healthz" > /dev/null 2>&1; then
+        # Health check non richiede autenticazione
+        if curl -s -f "http://localhost:${N8N_PORT}/healthz" > /dev/null 2>&1; then
             log_success "n8n pronto"
             return 0
         fi
@@ -81,12 +80,23 @@ import_workflow() {
     workflow_data=$(<"$workflow_file")
 
     # Importa tramite API n8n
+    # Supporta sia API key che basic auth
     local response
-    response=$(curl -s -w "\n%{http_code}" \
-        -u "${N8N_BASIC_AUTH_USER}:${N8N_BASIC_AUTH_PASSWORD}" \
+    local auth_header=""
+
+    if [[ -n "${N8N_API_KEY:-}" ]]; then
+        # Usa API key se disponibile (metodo preferito)
+        auth_header="-H \"X-N8N-API-KEY: ${N8N_API_KEY}\""
+    elif [[ -n "${N8N_BASIC_AUTH_USER:-}" ]]; then
+        # Fallback a basic auth
+        auth_header="-u ${N8N_BASIC_AUTH_USER}:${N8N_BASIC_AUTH_PASSWORD}"
+    fi
+
+    response=$(eval curl -s -w "\n%{http_code}" \
+        $auth_header \
         -H "Content-Type: application/json" \
         -X POST \
-        -d "$workflow_data" \
+        -d "'$workflow_data'" \
         "http://localhost:${N8N_PORT}/api/v1/workflows")
 
     local http_code=$(echo "$response" | tail -n1)
