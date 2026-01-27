@@ -322,7 +322,7 @@ SUPABASE_STORAGE_FILE_PATH=/var/lib/storage
 # BACKUP Configuration
 # -----------------------------------------------------------------------------
 BACKUP_ENABLED=${BACKUP_ENABLED}
-BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-"0 2 * * *"}
+BACKUP_SCHEDULE="${BACKUP_SCHEDULE:-0 2 * * *}"
 BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-30}
 BACKUP_LOCAL_PATH=./backups
 
