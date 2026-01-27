@@ -1,0 +1,12 @@
+{
+  "name": "testing-1",
+  "description": "Local Platform Kit project",
+  "initialized_at": "2026-01-27T15:55:49Z",
+  "template": "local-platform-kit",
+  "template_version": "1.0.0",
+  "environments": {
+    "dev": "cloud",
+    "staging": "self-hosted",
+    "prod": "self-hosted"
+  }
+}

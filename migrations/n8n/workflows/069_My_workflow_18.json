@@ -1,0 +1,440 @@
+{
+  "updatedAt": "2024-11-21T15:41:14.000Z",
+  "createdAt": "2024-11-21T14:54:40.716Z",
+  "id": "a38TR3tM2U34vMGZ",
+  "name": "My workflow 18",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f2c8f41c-b74c-415c-b785-fbf04dada35e",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.manualChatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        580,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {}
+      },
+      "id": "6a6675a0-8793-4df1-8f44-24bc06cb83c4",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        740,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38d07d52-73f5-4288-9ec0-1df49ec465fb",
+              "name": "prompt",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "12358f37-0a65-4d83-86c9-ef3ce2006480",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1140,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {}
+      },
+      "id": "e746e7aa-c074-47e6-bdbf-6a170d237b3a",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "72c63a65-3ad0-4670-bf9b-e66b7354c676",
+              "name": "HTML",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1948f8c-baff-4990-8e81-926e4e88c91b",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1700,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {}
+      },
+      "id": "c9ebaf29-49e8-4036-85c8-22d61ea4dfc9",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "72c63a65-3ad0-4670-bf9b-e66b7354c676",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "feaf77a5-afe6-498e-ae3d-7275b013368c",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2280,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "options": {
+          "maxTokens": 32768
+        }
+      },
+      "id": "ab9dabf2-8620-46b9-8636-119f6f4be2ce",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Genera una descrizione completa e dettagliata per un sito web professionale in un singolo file HTML che includa CSS e JavaScript interni. Specifica:\nUn layout a sezioni (ad esempio: ‘Header’, ‘Hero’, ‘Chi siamo’, ‘Servizi’, ‘Testimonianze’, ‘Contatti’, ‘Footer’);\nUno schema di colori, tipo di font, e stile professionale per CSS integrato;\nInterazioni JavaScript per effetti come menu mobile, carosello testimonial, e convalida del modulo di contatto.\nFornisci dettagli chiari per ciascuna sezione, indicando anche le animazioni e l’interattività per migliorare l’esperienza utente su dispositivi mobili e desktop."
+        }
+      },
+      "id": "ecdfe917-9490-40d8-acf1-98f919dad7bd",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        780,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "options": {
+          "systemMessage": "Crea la struttura HTML completa per un sito web professionale seguendo queste specifiche:\nIl sito deve includere le seguenti sezioni: header, hero, about, services, testimonials, contact, e footer.\nUtilizza tag HTML semanticamente corretti e assegna classi significative a ciascun elemento per facilitare la gestione del CSS e JavaScript.\nAssicurati di creare placeholder per il CSS e JavaScript, in modo che possano essere aggiunti internamente in seguito.\nMantieni il layout organizzato e pronto per essere completato con stili e funzionalità interattive.\"\nEsempio di output atteso:\n\nhtml\nCopia codice\n<!DOCTYPE html>\n<html lang=\"it\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Sito Professionale</title>\n    <style>\n        /* CSS verrà aggiunto qui */\n    </style>\n</head>\n<body>\n    <header> <!-- Contenuto header --> </header>\n    <section class=\"hero\"> <!-- Contenuto hero --> </section>\n    <section class=\"about\"> <!-- Contenuto about --> </section>\n    <section class=\"services\"> <!-- Contenuto services --> </section>\n    <section class=\"testimonials\"> <!-- Contenuto testimonials --> </section>\n    <section class=\"contact\"> <!-- Contenuto contact --> </section>\n    <footer> <!-- Contenuto footer --> </footer>\n    <script>\n        // JavaScript verrà aggiunto qui\n    </script>\n</body>\n</html>\nrestituisci il codice completo in output"
+        }
+      },
+      "id": "d5d9d74b-0f94-43dd-af93-474edb3118fa",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1320,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "prendi il codice in input e aggiungi il codice JavaScript per un sito web professionale con interattività avanzata, utilizzando le seguenti specifiche:\nAggiungi un menu mobile che si apre e chiude al clic su un’icona;\nImposta animazioni di entrata per le sezioni della pagina (come un effetto di fade-in) mentre vengono visualizzate;\nImplementa la convalida del modulo di contatto nella sezione contact per controllare i campi prima dell’invio;\nAggiungi un carosello automatico di testimonianze nella sezione testimonials, che ruota tra i feedback ogni pochi secondi;\nAssicurati che tutto il JavaScript possa essere inserito in un tag <script> nel file HTML, senza dipendenze esterne o librerie.\nrestituisci il codice completo in output",
+          "maxIterations": 10
+        }
+      },
+      "id": "bed39604-1069-4bf1-ab76-84292c771297",
+      "name": "AI Agent3",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2440,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.HTML }}",
+        "options": {
+          "systemMessage": "PRendi il codice in input e aggiungi il codice CSS per uno stile professionale, utilizzando le seguenti specifiche:\nDefinisci uno schema di colori e font professionale, ad esempio, colori come blu e bianco e font puliti e leggibili.\nImposta un layout responsive con media queries per garantire una visualizzazione ottimale su dispositivi mobili e desktop.\nAggiungi stili specifici per le sezioni (header, hero, about, services, testimonials, contact, footer), includendo padding e margini coerenti.\nCrea effetti hover per i pulsanti e transizioni su animazioni per rendere il sito interattivo e moderno.\nAssicurati che tutto il CSS possa essere inserito all'interno di un tag <style> nel file HTML, senza dipendenze esterne.\nrestituisci il codice completo in output."
+        }
+      },
+      "id": "b2a56aa5-4992-4b64-997c-bb586fdede5d",
+      "name": "AI Agent2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1900,
+        280
+      ]
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "efdf6620-2f62-4dce-b4ab-845cfec750d1",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2024-11-21T14:54:40.730Z",
+      "createdAt": "2024-11-21T14:54:40.730Z",
+      "role": "workflow:owner",
+      "workflowId": "a38TR3tM2U34vMGZ",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

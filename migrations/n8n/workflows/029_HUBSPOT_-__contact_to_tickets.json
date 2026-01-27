@@ -1,0 +1,929 @@
+{
+  "updatedAt": "2025-11-13T10:00:32.000Z",
+  "createdAt": "2025-11-12T14:45:24.820Z",
+  "id": "GHkLdTKfKOM0IQPx",
+  "name": "HUBSPOT -  contact to tickets",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "**Questo flusso prende l'id dell'utente e cerca i ticket a cui è associato**\n\nhttps://api.hubspot.com/crm/v3/objects/contacts/{contactId}/associations/tickets\n\nuserExempleId: 174449961789 (utente raffaelelugibello+test@gmail.com)\n",
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "ed5280e0-4953-4a19-b430-59c1e4e3fdb2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hubspot.com/crm/v3/objects/contacts/{{ $json.query.id_user }}/associations/tickets ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotAppToken",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d3167757-5e2c-41a7-acf7-20f5703addbc",
+      "name": "Find a ticket for contact",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a0b37360-f264-4379-a76f-c1a3270b7c98",
+              "leftValue": "={{ $json.results }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "9028cc89-d139-49f7-8673-834e2395efc7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "resource": "ticket",
+        "operation": "get",
+        "ticketId": {
+          "__rl": true,
+          "value": "={{ $json.results[0].id }}",
+          "mode": "id"
+        },
+        "additionalFields": {
+          "properties": [
+            "subject",
+            "hs_all_associated_contact_firstnames",
+            "numero_civico",
+            "modello_garanzia"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        272
+      ],
+      "id": "9462ca19-f680-47f3-b5d4-0fc315836bfe",
+      "name": "Get a ticket1",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubspot.com/crm/v3/objects/tickets/batch/read",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotAppToken",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"inputs\": {{ $json.inputs }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1488,
+        -96
+      ],
+      "id": "58eac38c-981a-4058-878a-808031a7931e",
+      "name": "HTTP Request",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f3103c8-da6b-4404-8155-cc56058c250f",
+              "name": "results",
+              "value": "={{ $json.results }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        -96
+      ],
+      "id": "38227a26-a4b9-411a-99d9-d112a6732aa5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug: vediamo la struttura reale dei dati\nconsole.log('Input completo:', JSON.stringify($input.all(), null, 2));\n\n// Accedi correttamente ai dati\nconst inputData = $input.all();\nconst results = $input.first().json.results\n\n// Verifica che sia un array\nif (!Array.isArray(results)) {\n  throw new Error('results non è un array: ' + typeof results);\n}\n\n// Trasforma i dati\nconst transformedInputs = results.map(item => ({\n  id: item.id\n}));\n\nreturn [{\n  json: {\n    inputs: transformedInputs\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -96
+      ],
+      "id": "14f7a48f-61fb-4a3a-ace4-41c61d2883e3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b4caee4-d7d7-4582-9d1b-8235fa8dede7",
+              "name": "inputs",
+              "value": "={{ $json.inputs }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        -96
+      ],
+      "id": "ad3a3921-8b71-4f25-98a1-b17643184e6e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get_list_personal_ticket",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ddce18c7-4396-438f-b52f-8ed19fc7e2ab",
+      "name": "Webhook",
+      "webhookId": "115f986f-19f6-400d-9154-f638b8da1034",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eLPHcGCtzV6skRoX",
+          "name": "ciaociao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d1b1e75-8a23-4925-adf2-39efb52ed416",
+              "leftValue": "={{ $('Find a ticket for contact').item.json.results }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthEquals",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        160
+      ],
+      "id": "78128807-8b0d-41ea-b788-41e401e4ca66",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        816,
+        96
+      ],
+      "id": "30a5c16c-b4de-459a-9b40-a47c1b938e50",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1008,
+        272
+      ],
+      "id": "f3f2aad3-c0bf-4a78-828e-c98bd99e1d9e",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1680,
+        -96
+      ],
+      "id": "cc200cb2-403b-4f17-8f1c-e616cfac7e80",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "connections": {
+    "Find a ticket for contact": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Find a ticket for contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a ticket1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a ticket1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.raffaelelugibello.it",
+            "user-agent": "PostmanRuntime/7.49.0",
+            "content-length": "0",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br",
+            "auth": "ciaociao",
+            "cache-control": "no-cache",
+            "postman-token": "fcbe04d2-bcd7-42c7-8ffb-3ffbaa3d5ba1",
+            "via": "1.1 Caddy",
+            "x-forwarded-for": "37.182.176.18",
+            "x-forwarded-host": "n8n.raffaelelugibello.it",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {
+            "id_user": "174449961789"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.raffaelelugibello.it/webhook-test/get_list_personal_ticket",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "cde7a670-0574-4f18-8873-6b61b7a17286",
+  "activeVersionId": "cde7a670-0574-4f18-8873-6b61b7a17286",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-12T14:45:24.829Z",
+      "createdAt": "2025-11-12T14:45:24.829Z",
+      "role": "workflow:owner",
+      "workflowId": "GHkLdTKfKOM0IQPx",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-11-12T12:01:38.071Z",
+      "createdAt": "2025-11-12T12:01:38.071Z",
+      "id": "XoKPw6Lv8txipfRR",
+      "name": "hubspot rinnai"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "cde7a670-0574-4f18-8873-6b61b7a17286",
+    "workflowId": "GHkLdTKfKOM0IQPx",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "**Questo flusso prende l'id dell'utente e cerca i ticket a cui è associato**\n\nhttps://api.hubspot.com/crm/v3/objects/contacts/{contactId}/associations/tickets\n\nuserExempleId: 174449961789 (utente raffaelelugibello+test@gmail.com)\n",
+          "width": 512
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -272
+        ],
+        "typeVersion": 1,
+        "id": "ed5280e0-4953-4a19-b430-59c1e4e3fdb2",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "url": "=https://api.hubspot.com/crm/v3/objects/contacts/{{ $json.query.id_user }}/associations/tickets ",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotAppToken",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          208,
+          0
+        ],
+        "id": "d3167757-5e2c-41a7-acf7-20f5703addbc",
+        "name": "Find a ticket for contact",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a0b37360-f264-4379-a76f-c1a3270b7c98",
+                "leftValue": "={{ $json.results }}",
+                "rightValue": 1,
+                "operator": {
+                  "type": "array",
+                  "operation": "lengthGt",
+                  "rightType": "number"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          400,
+          0
+        ],
+        "id": "9028cc89-d139-49f7-8673-834e2395efc7",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "authentication": "appToken",
+          "resource": "ticket",
+          "operation": "get",
+          "ticketId": {
+            "__rl": true,
+            "value": "={{ $json.results[0].id }}",
+            "mode": "id"
+          },
+          "additionalFields": {
+            "properties": [
+              "subject",
+              "hs_all_associated_contact_firstnames",
+              "numero_civico",
+              "modello_garanzia"
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.hubspot",
+        "typeVersion": 2.2,
+        "position": [
+          816,
+          272
+        ],
+        "id": "9462ca19-f680-47f3-b5d4-0fc315836bfe",
+        "name": "Get a ticket1",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubspot.com/crm/v3/objects/tickets/batch/read",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotAppToken",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"inputs\": {{ $json.inputs }}\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1488,
+          -96
+        ],
+        "id": "58eac38c-981a-4058-878a-808031a7931e",
+        "name": "HTTP Request",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "4f3103c8-da6b-4404-8155-cc56058c250f",
+                "name": "results",
+                "value": "={{ $json.results }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          816,
+          -96
+        ],
+        "id": "38227a26-a4b9-411a-99d9-d112a6732aa5",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Debug: vediamo la struttura reale dei dati\nconsole.log('Input completo:', JSON.stringify($input.all(), null, 2));\n\n// Accedi correttamente ai dati\nconst inputData = $input.all();\nconst results = $input.first().json.results\n\n// Verifica che sia un array\nif (!Array.isArray(results)) {\n  throw new Error('results non è un array: ' + typeof results);\n}\n\n// Trasforma i dati\nconst transformedInputs = results.map(item => ({\n  id: item.id\n}));\n\nreturn [{\n  json: {\n    inputs: transformedInputs\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1024,
+          -96
+        ],
+        "id": "14f7a48f-61fb-4a3a-ace4-41c61d2883e3",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2b4caee4-d7d7-4582-9d1b-8235fa8dede7",
+                "name": "inputs",
+                "value": "={{ $json.inputs }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1232,
+          -96
+        ],
+        "id": "ad3a3921-8b71-4f25-98a1-b17643184e6e",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get_list_personal_ticket",
+          "authentication": "headerAuth",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "ddce18c7-4396-438f-b52f-8ed19fc7e2ab",
+        "name": "Webhook",
+        "webhookId": "115f986f-19f6-400d-9154-f638b8da1034",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "eLPHcGCtzV6skRoX",
+            "name": "ciaociao"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "8d1b1e75-8a23-4925-adf2-39efb52ed416",
+                "leftValue": "={{ $('Find a ticket for contact').item.json.results }}",
+                "rightValue": 0,
+                "operator": {
+                  "type": "array",
+                  "operation": "lengthEquals",
+                  "rightType": "number"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          592,
+          160
+        ],
+        "id": "78128807-8b0d-41ea-b788-41e401e4ca66",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          816,
+          96
+        ],
+        "id": "30a5c16c-b4de-459a-9b40-a47c1b938e50",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1008,
+          272
+        ],
+        "id": "f3f2aad3-c0bf-4a78-828e-c98bd99e1d9e",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          1680,
+          -96
+        ],
+        "id": "cc200cb2-403b-4f17-8f1c-e616cfac7e80",
+        "name": "Respond to Webhook2"
+      }
+    ],
+    "connections": {
+      "Find a ticket for contact": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Find a ticket for contact",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get a ticket1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a ticket1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

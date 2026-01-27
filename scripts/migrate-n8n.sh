@@ -47,7 +47,6 @@ wait_for_n8n() {
     log_info "Attesa avvio n8n..."
 
     while [[ $attempt -lt $max_attempts ]]; do
-        # Health check non richiede autenticazione
         if curl -s -f "http://localhost:${N8N_PORT}/healthz" > /dev/null 2>&1; then
             log_success "n8n pronto"
             return 0
@@ -75,28 +74,29 @@ import_workflow() {
         return 0
     fi
 
-    # Leggi workflow JSON
-    local workflow_data
-    workflow_data=$(<"$workflow_file")
-
-    # Importa tramite API n8n
-    # Supporta sia API key che basic auth
-    local response
-    local auth_header=""
-
-    if [[ -n "${N8N_API_KEY:-}" ]]; then
-        # Usa API key se disponibile (metodo preferito)
-        auth_header="-H \"X-N8N-API-KEY: ${N8N_API_KEY}\""
-    elif [[ -n "${N8N_BASIC_AUTH_USER:-}" ]]; then
-        # Fallback a basic auth
-        auth_header="-u ${N8N_BASIC_AUTH_USER}:${N8N_BASIC_AUTH_PASSWORD}"
+    # Verifica che N8N_API_KEY sia configurato
+    if [[ -z "${N8N_API_KEY:-}" ]]; then
+        log_error "N8N_API_KEY non configurato. Crea un API key in n8n e aggiungilo al file .env"
+        return 1
     fi
 
-    response=$(eval curl -s -w "\n%{http_code}" \
-        $auth_header \
+    # Leggi e pulisci workflow JSON (rimuovi metadata cloud e campi read-only)
+    local workflow_data
+    workflow_data=$(jq '{
+        name: .name,
+        nodes: .nodes,
+        connections: .connections,
+        settings: .settings,
+        staticData: .staticData
+    }' "$workflow_file")
+
+    # Importa tramite API n8n
+    local response
+    response=$(curl -s -w "\n%{http_code}" \
+        -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
         -H "Content-Type: application/json" \
         -X POST \
-        -d "'$workflow_data'" \
+        -d "$workflow_data" \
         "http://localhost:${N8N_PORT}/api/v1/workflows")
 
     local http_code=$(echo "$response" | tail -n1)

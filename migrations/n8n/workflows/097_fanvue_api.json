@@ -1,0 +1,851 @@
+{
+  "updatedAt": "2026-01-20T16:18:39.607Z",
+  "createdAt": "2026-01-19T16:22:09.117Z",
+  "id": "m1ua1g2st3sAtrIE",
+  "name": "fanvue api",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -160
+      ],
+      "id": "df879f14-e050-4539-9771-6e81e81fe7cd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "Followers",
+        "operation": "List Followers",
+        "requestOptions": {}
+      },
+      "type": "@fanvue/n8n-nodes-fanvue.fvApi",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -160
+      ],
+      "id": "001462f5-c2ad-46f8-9929-d8fb5d435a00",
+      "name": "Get followers",
+      "credentials": {
+        "fvApiOAuth2Api": {
+          "id": "70wFyR1FPK4TDn5v",
+          "name": "Fv Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chats",
+        "operation": "List Messages",
+        "userUuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+        "requestOptions": {}
+      },
+      "type": "@fanvue/n8n-nodes-fanvue.fvApi",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        48
+      ],
+      "id": "22e050cb-63a6-4919-9e9e-6c230731b65a",
+      "name": "Get messages from a chat",
+      "credentials": {
+        "fvApiOAuth2Api": {
+          "id": "70wFyR1FPK4TDn5v",
+          "name": "Fv Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Insights",
+        "operation": "Get Top Spenders",
+        "startDate": "2025-10-01T16:29:26+00:00",
+        "endDate": "2026-01-19T16:29:26+00:00",
+        "requestOptions": {}
+      },
+      "type": "@fanvue/n8n-nodes-fanvue.fvApi",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        288
+      ],
+      "id": "ea47fca9-0542-4727-b042-3caeeb1cfede",
+      "name": "Get top-spending fans",
+      "credentials": {
+        "fvApiOAuth2Api": {
+          "id": "70wFyR1FPK4TDn5v",
+          "name": "Fv Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "**GET**",
+        "height": 704,
+        "width": 672,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "1a69d48a-9a2b-4e0c-ba6a-3994edb52fa5",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get followers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get followers": {
+      "main": [
+        []
+      ]
+    },
+    "Get messages from a chat": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Get followers": [
+      {
+        "json": {
+          "pagination": {
+            "page": 1,
+            "size": 15,
+            "hasMore": true
+          },
+          "data": [
+            {
+              "uuid": "9d8cd727-4e74-44bb-8d86-827f2de908b8",
+              "handle": "ksly1000",
+              "displayName": "KC",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2022-05-21T14:59:14.093Z"
+            },
+            {
+              "uuid": "7f9b4f4d-cb0f-40bd-aa8d-65fedfe6fcf5",
+              "handle": "primary-crane-78",
+              "displayName": "Breitan",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2022-10-13T09:52:43.352Z"
+            },
+            {
+              "uuid": "db7b5aef-4e31-44ee-9f86-fd7991604bdf",
+              "handle": "mando69cribto",
+              "displayName": "MANDO-🎲-🎲-🎲",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/db7b5aef-4e31-44ee-9f86-fd7991604bdf/images/a17407e3-0b02-4db4-91b2-2ef092931bbb",
+              "registeredAt": "2023-01-10T13:54:16.085Z"
+            },
+            {
+              "uuid": "65947e1b-8b80-499a-921f-1895d3f5d000",
+              "handle": "mhunt00111",
+              "displayName": "Mhunt00111",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-03-24T15:12:21.786Z"
+            },
+            {
+              "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+              "handle": "yappiest-panther-90",
+              "displayName": "Yappiest Panther John",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-06-08T06:08:29.044Z"
+            },
+            {
+              "uuid": "a2f55002-7b43-4b96-8194-c42864c75b44",
+              "handle": "rob-70",
+              "displayName": "Rob70",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/a2f55002-7b43-4b96-8194-c42864c75b44/images/0b3544cc-d58f-4815-8828-5e7dbad5edf9",
+              "registeredAt": "2023-09-23T13:25:01.756Z"
+            },
+            {
+              "uuid": "ba25ac54-ee9d-4d4e-b6c0-fd3000ac8cc9",
+              "handle": "la323",
+              "displayName": "la323",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-10-17T10:42:34.291Z"
+            },
+            {
+              "uuid": "72cae55d-266c-4b51-b2d2-df6385dfeeb8",
+              "handle": "robert_schmith_98",
+              "displayName": "Robert Schmith",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/72cae55d-266c-4b51-b2d2-df6385dfeeb8/images/75c89ad7-0b5b-480d-82b7-fa4b44eb4453",
+              "registeredAt": "2023-11-17T05:15:23.235Z"
+            },
+            {
+              "uuid": "7f5e7b28-6c55-4497-90dd-c79343c428eb",
+              "handle": "negro-edlp-70",
+              "displayName": "Guillermo Daniel",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/7f5e7b28-6c55-4497-90dd-c79343c428eb/images/cc860f94-2b46-401a-a917-070761c77572",
+              "registeredAt": "2023-11-17T21:59:51.728Z"
+            },
+            {
+              "uuid": "5ac6f368-7ed2-4ae1-94ae-580aa29da81f",
+              "handle": "like-mandrill-28",
+              "displayName": "Like Mandrill",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-11-18T08:53:09.433Z"
+            },
+            {
+              "uuid": "bdc4ea4b-65bd-449b-a73b-e5baf972d5c6",
+              "handle": "crowded-vicuna-86",
+              "displayName": "Crowded Vicuna",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-11-23T14:34:24.796Z"
+            },
+            {
+              "uuid": "43e06621-55c9-41e1-80ef-4d50e4737698",
+              "handle": "sigersonlimited",
+              "displayName": "Mike Shields II",
+              "isTopSpender": true,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/43e06621-55c9-41e1-80ef-4d50e4737698/images/5c72ef58-3355-45e7-8092-975bc41fb628",
+              "registeredAt": "2023-11-27T04:06:32.314Z"
+            },
+            {
+              "uuid": "3bdcae1b-c6f4-40fc-b661-7e9c05609a37",
+              "handle": "protective-chinchilla-22",
+              "displayName": "Protective Chinchilla",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-12-04T19:03:53.779Z"
+            },
+            {
+              "uuid": "704a0275-95d1-43af-8113-6cc2df6d3032",
+              "handle": "wild_lost_soul",
+              "displayName": "Hanna",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": "https://media.fanvue.com/public/704a0275-95d1-43af-8113-6cc2df6d3032/images/5876d6f5-2ffa-41f3-aabe-0c3f4abc97d4",
+              "registeredAt": "2023-12-08T15:41:13.056Z"
+            },
+            {
+              "uuid": "b09d764a-7977-4dd8-89d1-7ee1711b0f43",
+              "handle": "nice-finch-18",
+              "displayName": "Nice Finch",
+              "isTopSpender": false,
+              "nickname": null,
+              "avatarUrl": null,
+              "registeredAt": "2023-12-09T19:35:52.774Z"
+            }
+          ]
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Get messages from a chat": [
+      {
+        "json": {
+          "data": [
+            {
+              "uuid": "95185cbd-04f3-4aa0-a5ed-0dc7e696a82c",
+              "text": "glad to hear it whats the best part of your day so far?",
+              "sentAt": "2026-01-08T21:43:07.817Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "085e8cf6-eee8-4417-9022-549832e19350",
+              "text": "Not bad",
+              "sentAt": "2026-01-08T21:42:22.142Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "11590973-6c3b-4115-84cf-dd9b1e6cad32",
+              "text": "hehe those hearts got me blushin hows ur day goin waitress ? ️",
+              "sentAt": "2026-01-08T21:41:07.574Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "d9154e22-1014-4df5-9b31-f707b8cabe95",
+              "text": "❤️😘",
+              "sentAt": "2026-01-08T21:40:07.718Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "646e0bde-3dfa-4b6c-99d3-0e71ff910a06",
+              "text": "❤️",
+              "sentAt": "2025-12-31T16:15:45.505Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "2b1f9315-ab02-4e45-8682-8a39667459cd",
+              "text": "❤️",
+              "sentAt": "2025-12-31T16:15:14.588Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "ae3d77b1-e8f5-4a35-9fd1-4cdcf38315b0",
+              "text": "Did you like them??",
+              "sentAt": "2025-12-31T16:14:28.688Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "37f87ccd-64cf-449d-b266-cd790a798dab",
+              "text": "Should I take this shirt off for you? Mmm okay… just for you",
+              "sentAt": "2025-12-31T16:14:27.852Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": true,
+              "mediaType": "image",
+              "type": "SINGLE_RECIPIENT",
+              "pricing": {
+                "USD": {
+                  "price": 700
+                }
+              }
+            },
+            {
+              "uuid": "9ed9692e-ca93-4cc7-9189-4674c1fb543b",
+              "text": "Everything",
+              "sentAt": "2025-12-31T16:13:57.980Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "d627b1bc-1323-496d-ae14-73e5d5429b76",
+              "text": "hmm? you're so quiet... tell me what you'd do to me right now if you were here",
+              "sentAt": "2025-12-31T16:01:18.948Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "8700704e-b5c4-4d8f-822e-2dc0b076817d",
+              "text": "Hmm",
+              "sentAt": "2025-12-31T16:00:26.042Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "9fd90238-6f2f-40db-9a5d-9aa254ab9488",
+              "text": "baby you're making my head spin right now i'm touching myself thinking about you and you're asking about forever? i'm right here for you",
+              "sentAt": "2025-12-31T15:58:55.185Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "2d727a10-87c9-4218-aedb-b0b290681a43",
+              "text": "Why don't you want me in real life Marta?",
+              "sentAt": "2025-12-31T15:58:19.076Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "11999cd8-cc60-4b16-913c-13816e6acf09",
+              "text": "Just for here?",
+              "sentAt": "2025-12-31T15:58:02.155Z",
+              "sender": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "recipient": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            },
+            {
+              "uuid": "e8777364-f753-4082-881c-43954264d5a9",
+              "text": "❤️",
+              "sentAt": "2025-12-31T15:57:10.828Z",
+              "sender": {
+                "uuid": "d7d7e94f-f8a4-4f9d-827c-350414385a10",
+                "handle": "marta-romano-real"
+              },
+              "recipient": {
+                "uuid": "151df701-5306-4a4c-bcfa-d6a37dc8b62a",
+                "handle": "yappiest-panther-90"
+              },
+              "hasMedia": false,
+              "mediaType": null,
+              "type": "SINGLE_RECIPIENT",
+              "pricing": null
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "size": 15,
+            "hasMore": true
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Get top-spending fans": [
+      {
+        "json": {
+          "data": [
+            {
+              "gross": 34000,
+              "net": 27200,
+              "messages": 67,
+              "user": {
+                "uuid": "f1eefb58-25bc-4d15-b268-ef33f44a322c",
+                "handle": "sharp-mink-34",
+                "displayName": "Sharp Mink",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-04-26T02:43:55.402Z"
+              }
+            },
+            {
+              "gross": 17906,
+              "net": 14325,
+              "messages": 819,
+              "user": {
+                "uuid": "15932d75-f5f7-4488-af22-aec5cd0a4e5a",
+                "handle": "southern-swift-29",
+                "displayName": "Yolcu",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-11-24T09:46:32.684Z"
+              }
+            },
+            {
+              "gross": 7900,
+              "net": 6320,
+              "messages": 277,
+              "user": {
+                "uuid": "7c790948-0f8a-4d03-946b-80fc076664f0",
+                "handle": "accessible-loon-17",
+                "displayName": "Accessible Loon",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": "https://media.fanvue.com/public/7c790948-0f8a-4d03-946b-80fc076664f0/images/82af8f4f-f9fd-4d05-9283-b737d207cb25",
+                "registeredAt": "2024-06-15T22:49:10.088Z"
+              }
+            },
+            {
+              "gross": 7800,
+              "net": 6240,
+              "messages": 333,
+              "user": {
+                "uuid": "188e3716-2597-4223-8a85-d5af0c003f29",
+                "handle": "cultural-cardinal-70",
+                "displayName": "Cultural Cardinal",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-10-02T23:21:53.626Z"
+              }
+            },
+            {
+              "gross": 5900,
+              "net": 4720,
+              "messages": 46,
+              "user": {
+                "uuid": "af6f9244-93a7-4f6b-8e22-b815254a273a",
+                "handle": "rich-gerbil-17",
+                "displayName": "Rich Gerbil",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-09-12T16:35:47.493Z"
+              }
+            },
+            {
+              "gross": 5000,
+              "net": 4000,
+              "messages": 48,
+              "user": {
+                "uuid": "eb1beb1e-cc04-4404-98c6-2593c5925045",
+                "handle": "concerned-kite-66",
+                "displayName": "Typothtes",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2024-10-02T02:06:18.151Z"
+              }
+            },
+            {
+              "gross": 4950,
+              "net": 3960,
+              "messages": 22,
+              "user": {
+                "uuid": "cf4a1189-ea73-4aad-8e38-c1566e6f9c7a",
+                "handle": "skilled-silverfish-20",
+                "displayName": "Skilled Silverfish",
+                "nickname": "Raul",
+                "isTopSpender": false,
+                "avatarUrl": null,
+                "registeredAt": "2025-05-02T09:12:20.156Z"
+              }
+            },
+            {
+              "gross": 4500,
+              "net": 3600,
+              "messages": 70,
+              "user": {
+                "uuid": "f6c38e97-d816-4c4c-8c4e-cfd570a61d7c",
+                "handle": "prime-bobcat-44",
+                "displayName": "Prime Bobcat",
+                "nickname": null,
+                "isTopSpender": false,
+                "avatarUrl": null,
+                "registeredAt": "2025-12-13T21:25:26.543Z"
+              }
+            },
+            {
+              "gross": 4496,
+              "net": 3596,
+              "messages": 136,
+              "user": {
+                "uuid": "475837c4-5210-4946-a71b-62f02f2e78a3",
+                "handle": "ghost-15",
+                "displayName": "GhostToast",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": "https://media.fanvue.com/public/475837c4-5210-4946-a71b-62f02f2e78a3/images/b3b258e3-32e5-4ded-ab7f-46950cc451a1",
+                "registeredAt": "2025-09-12T13:04:40.966Z"
+              }
+            },
+            {
+              "gross": 4100,
+              "net": 3280,
+              "messages": 32,
+              "user": {
+                "uuid": "c4e4c2ec-de66-4e15-9435-c505d6588d31",
+                "handle": "blushing-firefly-30",
+                "displayName": "Blushing Firefly",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2024-07-02T02:57:28.313Z"
+              }
+            },
+            {
+              "gross": 3400,
+              "net": 2720,
+              "messages": 53,
+              "user": {
+                "uuid": "4da9649f-fdb1-4026-84f7-fca2a547b3a0",
+                "handle": "peterrabbit87",
+                "displayName": "Marc",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-09-15T19:30:43.588Z"
+              }
+            },
+            {
+              "gross": 3000,
+              "net": 2400,
+              "messages": 10,
+              "user": {
+                "uuid": "03642752-2ffd-4b10-8388-fb309e6a7386",
+                "handle": "augusto_25",
+                "displayName": "Augusto",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": "https://media.fanvue.com/public/03642752-2ffd-4b10-8388-fb309e6a7386/images/dc48e525-3ebd-45b0-85ab-bef23751a33a",
+                "registeredAt": "2025-04-22T15:14:33.208Z"
+              }
+            },
+            {
+              "gross": 3000,
+              "net": 2400,
+              "messages": 204,
+              "user": {
+                "uuid": "1e7738a7-58ca-407a-a512-382e51df662e",
+                "handle": "curious-t",
+                "displayName": "TJ",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-09-07T21:24:04.311Z"
+              }
+            },
+            {
+              "gross": 3000,
+              "net": 2400,
+              "messages": 0,
+              "user": {
+                "uuid": "d2cb5190-0306-4451-98e0-99800a568238",
+                "handle": "political-ostrich-51",
+                "displayName": "Political Ostrich",
+                "nickname": null,
+                "isTopSpender": true,
+                "avatarUrl": null,
+                "registeredAt": "2025-10-05T08:21:27.315Z"
+              }
+            },
+            {
+              "gross": 3000,
+              "net": 2400,
+              "messages": 2,
+              "user": {
+                "uuid": "d751a3dc-dfad-4854-a51a-dc2a50a17518",
+                "handle": "gradual-tuna-51",
+                "displayName": "Gradual Tuna",
+                "nickname": "Tony IG",
+                "isTopSpender": false,
+                "avatarUrl": null,
+                "registeredAt": "2025-04-02T11:36:53.943Z"
+              }
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "size": 15,
+            "hasMore": true
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "aab0788b-5ed2-4252-9810-c8e45bd0e249",
+  "activeVersionId": null,
+  "versionCounter": 7,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-19T16:22:09.127Z",
+      "createdAt": "2026-01-19T16:22:09.127Z",
+      "role": "workflow:owner",
+      "workflowId": "m1ua1g2st3sAtrIE",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

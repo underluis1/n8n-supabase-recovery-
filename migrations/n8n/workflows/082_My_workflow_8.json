@@ -1,0 +1,681 @@
+{
+  "updatedAt": "2024-10-07T11:48:19.000Z",
+  "createdAt": "2024-09-13T14:44:51.872Z",
+  "id": "e4HIFwiFGW0WmIzH",
+  "name": "My workflow 8",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d7db03ef-616f-4911-8b3d-4693e76dc206",
+              "name": "Input_sito",
+              "value": "= {{ $json.query.input }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "564131eb-7507-4a5c-a5e7-dd50571840ac",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "pagine",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "title",
+              "fieldValue": "Nuova pagina"
+            }
+          ]
+        }
+      },
+      "id": "7d4e7355-d196-4ecb-8e31-1d153fb8ecfa",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "608d2a47-48f5-4a6b-9c17-ead2ed087ed2",
+              "name": "Json",
+              "value": "={{ $json.text }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a085bc9b-bd2f-46b7-9bdd-e6b4e06251d4",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1840,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Json",
+        "options": {}
+      },
+      "id": "737b16ce-f6fc-47e0-a0a1-169a4c632ead",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2060,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "contenuti",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "page_id",
+              "fieldValue": "={{ $json.page_id }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $json.type }}"
+            },
+            {
+              "fieldId": "text",
+              "fieldValue": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "id": "90944cfd-e8a3-4bc5-bab4-cfaf0c2a0d92",
+      "name": "Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2280,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a14c4eb0-d35e-4628-98ac-fc905dbc2beb",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        700
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "LNfRZRget8sJEIRV",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\"prompt\": \"Genera la struttura di una pagina web per un sito {{ $('Edit Fields').item.json[\"Input_sito\"] }}. La pagina deve includere diversi tipi di contenuti come “text”, “button”,  ”image”, “group”. Rispondi SOLO con un oggetto JSON che segue questa struttura:\n\n[\n{\n'page_id': deve essere sempre \"{{ $json.id }}\"\n'type': uno di questi elementi “text”, “button”,  ”image”, “group”,\n'text': il testo da dare agli elementi,\n},\n// Altri elementi di contenuto...\n]\n\nDevi generare una pagina modernissima che deve sembrare fatta da uno sviluppatore senior, devi rendere ricca la pagina di elementi, minimo 10. Usa immagini reali per le immagini\n\nLA STRUTTURA DEVE ESSERE UN ARRAY COME INDICATO, DEVI RESTITUIRE SOLO IL JSON IN QUESTO MOTO [{\"JSON GENERATO\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "564599a9-be93-487b-b2a4-fb60d3a120a1",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.3,
+      "position": [
+        1460,
+        300
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"prompt\": \"Genera la struttura di una pagina web per un sito {{ $('Edit Fields').item.json[\"Input_sito\"] }}. La pagina deve includere diversi tipi di contenuti come “text”, “button”,  ”image”, “group”. Rispondi SOLO con un oggetto JSON che segue questa struttura:  [ { 'page_id': deve essere sempre \"{{ $json.id }}\" 'type': uno di questi elementi “text”, “button”,  ”image”, “group”, 'text': il testo da dare agli elementi, }, // Altri elementi di contenuto... ]  Devi generare una pagina modernissima che deve sembrare fatta da uno sviluppatore senior, devi rendere ricca la pagina di elementi, minimo 10. Usa immagini reali per le immagini  LA STRUTTURA DEVE ESSERE UN ARRAY COME INDICATO, DEVI RESTITUIRE SOLO IL JSON IN QUESTO MOTO [{\"JSON GENERATO\"}]",
+        "hasOutputParser": true
+      },
+      "id": "6d0c8b00-5813-4773-b3a8-3588504f8db2",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1440,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "path": "17138409-47c0-42c9-bc12-f596932bc83c",
+        "options": {}
+      },
+      "id": "b957da58-1695-4540-97ce-e7f6658d48bc",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        580,
+        300
+      ],
+      "webhookId": "17138409-47c0-42c9-bc12-f596932bc83c"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.raffaelelugibello.it",
+            "user-agent": "Bubble",
+            "accept-encoding": "gzip, deflate",
+            "baggage": "bubblegroup.client.version=a53e1eb01c30dfc6c10f8354e187b537f2d687ca,bubblegroup.client.commit_timestamp=1726154717000,bubblegroup.http.route=apiservice%2Fdoapicallfromserver,bubblegroup.http.host=bubble.io",
+            "traceparent": "00-ab0d36f20f9e26d002be38c153beb2bd-dfd4f61c5904f173-01",
+            "x-bubble-depth": "1",
+            "x-forwarded-for": "35.91.126.107",
+            "x-forwarded-host": "n8n.raffaelelugibello.it",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {
+            "input": "sito"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.raffaelelugibello.it/webhook-test/17138409-47c0-42c9-bc12-f596932bc83c",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "8bae9ea9-18d3-400f-8dbb-01874b6c7c06",
+  "activeVersionId": "8bae9ea9-18d3-400f-8dbb-01874b6c7c06",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-09-13T14:44:51.884Z",
+      "createdAt": "2024-09-13T14:44:51.884Z",
+      "role": "workflow:owner",
+      "workflowId": "e4HIFwiFGW0WmIzH",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "8bae9ea9-18d3-400f-8dbb-01874b6c7c06",
+    "workflowId": "e4HIFwiFGW0WmIzH",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d7db03ef-616f-4911-8b3d-4693e76dc206",
+                "name": "Input_sito",
+                "value": "= {{ $json.query.input }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "564131eb-7507-4a5c-a5e7-dd50571840ac",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          800,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "tableId": "pagine",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "title",
+                "fieldValue": "Nuova pagina"
+              }
+            ]
+          }
+        },
+        "id": "7d4e7355-d196-4ecb-8e31-1d153fb8ecfa",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1020,
+          300
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "608d2a47-48f5-4a6b-9c17-ead2ed087ed2",
+                "name": "Json",
+                "value": "={{ $json.text }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a085bc9b-bd2f-46b7-9bdd-e6b4e06251d4",
+        "name": "Edit Fields1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          1840,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "Json",
+          "options": {}
+        },
+        "id": "737b16ce-f6fc-47e0-a0a1-169a4c632ead",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2060,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "tableId": "contenuti",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "page_id",
+                "fieldValue": "={{ $json.page_id }}"
+              },
+              {
+                "fieldId": "type",
+                "fieldValue": "={{ $json.type }}"
+              },
+              {
+                "fieldId": "text",
+                "fieldValue": "={{ $json.text }}"
+              }
+            ]
+          }
+        },
+        "id": "90944cfd-e8a3-4bc5-bab4-cfaf0c2a0d92",
+        "name": "Supabase1",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          2280,
+          300
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "a14c4eb0-d35e-4628-98ac-fc905dbc2beb",
+        "name": "Anthropic Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+        "typeVersion": 1.1,
+        "position": [
+          1440,
+          700
+        ],
+        "credentials": {
+          "anthropicApi": {
+            "id": "LNfRZRget8sJEIRV",
+            "name": "Anthropic account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list",
+            "cachedResultName": "GPT-4O"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=\"prompt\": \"Genera la struttura di una pagina web per un sito {{ $('Edit Fields').item.json[\"Input_sito\"] }}. La pagina deve includere diversi tipi di contenuti come “text”, “button”,  ”image”, “group”. Rispondi SOLO con un oggetto JSON che segue questa struttura:\n\n[\n{\n'page_id': deve essere sempre \"{{ $json.id }}\"\n'type': uno di questi elementi “text”, “button”,  ”image”, “group”,\n'text': il testo da dare agli elementi,\n},\n// Altri elementi di contenuto...\n]\n\nDevi generare una pagina modernissima che deve sembrare fatta da uno sviluppatore senior, devi rendere ricca la pagina di elementi, minimo 10. Usa immagini reali per le immagini\n\nLA STRUTTURA DEVE ESSERE UN ARRAY COME INDICATO, DEVI RESTITUIRE SOLO IL JSON IN QUESTO MOTO [{\"JSON GENERATO\"}]"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "564599a9-be93-487b-b2a4-fb60d3a120a1",
+        "name": "OpenAI",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.3,
+        "position": [
+          1460,
+          300
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "igqCGsHg8vp0q97r",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=\"prompt\": \"Genera la struttura di una pagina web per un sito {{ $('Edit Fields').item.json[\"Input_sito\"] }}. La pagina deve includere diversi tipi di contenuti come “text”, “button”,  ”image”, “group”. Rispondi SOLO con un oggetto JSON che segue questa struttura:  [ { 'page_id': deve essere sempre \"{{ $json.id }}\" 'type': uno di questi elementi “text”, “button”,  ”image”, “group”, 'text': il testo da dare agli elementi, }, // Altri elementi di contenuto... ]  Devi generare una pagina modernissima che deve sembrare fatta da uno sviluppatore senior, devi rendere ricca la pagina di elementi, minimo 10. Usa immagini reali per le immagini  LA STRUTTURA DEVE ESSERE UN ARRAY COME INDICATO, DEVI RESTITUIRE SOLO IL JSON IN QUESTO MOTO [{\"JSON GENERATO\"}]",
+          "hasOutputParser": true
+        },
+        "id": "6d0c8b00-5813-4773-b3a8-3588504f8db2",
+        "name": "Basic LLM Chain",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.4,
+        "position": [
+          1440,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "path": "17138409-47c0-42c9-bc12-f596932bc83c",
+          "options": {}
+        },
+        "id": "b957da58-1695-4540-97ce-e7f6658d48bc",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          580,
+          300
+        ],
+        "webhookId": "17138409-47c0-42c9-bc12-f596932bc83c"
+      }
+    ],
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Supabase1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

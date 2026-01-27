@@ -1,0 +1,299 @@
+{
+  "updatedAt": "2024-10-15T09:28:37.000Z",
+  "createdAt": "2024-10-14T23:20:01.416Z",
+  "id": "ISWqtucMG98dC7uR",
+  "name": "Siri AI Agent: Apple Shortcuts powered voice template",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "id": "b24c6e28-3c9e-4069-9e87-49b2efd47257",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1380,
+        660
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "id": "a4ec93c3-eefa-4006-b02c-f995fb7bc410",
+      "name": "Respond to Apple Shortcut",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1820,
+        460
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=questa è la mia richiesta: {{ $json.body.input }}\n",
+        "options": {
+          "systemMessage": "Rispondi sempre in italiano"
+        }
+      },
+      "id": "37504deb-c21c-4eea-a263-0d68c482dcd1",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.5,
+      "position": [
+        1440,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assistant",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "598d22d5-7472-44c5-ab2e-69c8bbb23ddd",
+      "name": "When called by Apple Shortcut",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        1160,
+        460
+      ],
+      "webhookId": "f0224b4b-1644-4d3d-9f12-01a9c04879e4",
+      "typeVersion": 2
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Apple Shortcut",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When called by Apple Shortcut": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": {
+    "templateId": "2436",
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1770e86b-4533-4839-b973-56b61f832a70",
+  "activeVersionId": "1770e86b-4533-4839-b973-56b61f832a70",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-10-14T23:20:01.432Z",
+      "createdAt": "2024-10-14T23:20:01.432Z",
+      "role": "workflow:owner",
+      "workflowId": "ISWqtucMG98dC7uR",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "1770e86b-4533-4839-b973-56b61f832a70",
+    "workflowId": "ISWqtucMG98dC7uR",
+    "nodes": [
+      {
+        "parameters": {
+          "model": "gpt-4o-mini",
+          "options": {}
+        },
+        "id": "b24c6e28-3c9e-4069-9e87-49b2efd47257",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          1380,
+          660
+        ],
+        "typeVersion": 1,
+        "credentials": {
+          "openAiApi": {
+            "id": "igqCGsHg8vp0q97r",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.output }}",
+          "options": {}
+        },
+        "id": "a4ec93c3-eefa-4006-b02c-f995fb7bc410",
+        "name": "Respond to Apple Shortcut",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          1820,
+          460
+        ],
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=questa è la mia richiesta: {{ $json.body.input }}\n",
+          "options": {
+            "systemMessage": "Rispondi sempre in italiano"
+          }
+        },
+        "id": "37504deb-c21c-4eea-a263-0d68c482dcd1",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.5,
+        "position": [
+          1440,
+          460
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "assistant",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "598d22d5-7472-44c5-ab2e-69c8bbb23ddd",
+        "name": "When called by Apple Shortcut",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          1160,
+          460
+        ],
+        "webhookId": "f0224b4b-1644-4d3d-9f12-01a9c04879e4",
+        "typeVersion": 2
+      }
+    ],
+    "connections": {
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Respond to Apple Shortcut",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When called by Apple Shortcut": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

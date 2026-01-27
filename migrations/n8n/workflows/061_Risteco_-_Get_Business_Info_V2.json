@@ -1,0 +1,2820 @@
+{
+  "updatedAt": "2025-12-22T17:20:43.861Z",
+  "createdAt": "2025-12-19T14:56:41.103Z",
+  "id": "VNeXzFrTRiBOWuUR",
+  "name": "Risteco - Get Business Info V2",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "binaryData": true,
+        "binaryPropertyName": "=data",
+        "additionalFields": {}
+      },
+      "id": "f022e6f7-52cf-4701-8ddb-ecef9a1cffc4",
+      "name": "AWS Rekognition",
+      "type": "n8n-nodes-base.awsRekognition",
+      "typeVersion": 1,
+      "position": [
+        -2640,
+        -2176
+      ],
+      "credentials": {
+        "aws": {
+          "id": "LklIv866uFIK3Xdn",
+          "name": "AWS (IAM) account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "imageUrls",
+        "options": {}
+      },
+      "id": "fdd6eee6-e920-4f9d-b9b8-d9fb4e940d38",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -3520,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b037f82b-f41a-482c-9639-e414f89dcac8",
+              "name": "id",
+              "value": "={{ $('Business Info').item.json.placeId }}",
+              "type": "string"
+            },
+            {
+              "id": "1e1fdcfc-1933-4e97-a360-918c09c0f45b",
+              "name": "displayName",
+              "value": "={{ $('Business Info').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "352b35d8-939c-43de-bbd5-4f65c4d7fb5a",
+              "name": "address",
+              "value": "={{ $('Business Info').item.json.address }}",
+              "type": "string"
+            },
+            {
+              "id": "b366441c-adbe-4b5d-ab6f-da9ae550bb69",
+              "name": "currentOpeningHours",
+              "value": "={{ $json.currentOpeningHours.weekdayDescriptions.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "b940973b-e020-4fc9-a85b-fd760706d2f7",
+              "name": "totalScore",
+              "value": "={{ $('Business Info').item.json.totalScore }}",
+              "type": "number"
+            },
+            {
+              "id": "80d2bdda-7e92-4869-ab61-2707b0032d5b",
+              "name": "reviewsCount",
+              "value": "={{ $('Business Info').item.json.reviewsCount }}",
+              "type": "number"
+            },
+            {
+              "id": "d13492bc-61a2-4f47-8451-6560f3e0c7b0",
+              "name": "phone",
+              "value": "={{ $('Business Info').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "f03521f0-71ac-4dd1-b1f0-c91cc3a27bc2",
+              "name": "phoneUnformatted",
+              "value": "={{ $('Business Info').item.json.phoneUnformatted }}",
+              "type": "string"
+            },
+            {
+              "id": "763f2b64-f2bb-4285-9fec-a69ccb467664",
+              "name": "description",
+              "value": "={{ $('Business Info').item.json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "5691c691-6c48-4f64-9c9f-c8a02933f7c3",
+              "name": "price",
+              "value": "={{ $('Business Info').item.json.price }}",
+              "type": "string"
+            },
+            {
+              "id": "1c210b61-a004-4a70-b501-7f4947d829e2",
+              "name": "categoryName",
+              "value": "={{ $('Business Info').item.json.categoryName }}",
+              "type": "string"
+            },
+            {
+              "id": "e218b2a0-de2b-4528-9678-e301451dec2f",
+              "name": "url",
+              "value": "={{ $('Business Info').item.json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9565355f-77da-41f7-9168-f9c41546d33b",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -3296,
+        -1840
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "reviews",
+        "options": {}
+      },
+      "id": "279834be-ac23-42fa-a21c-0210a8765638",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -3520,
+        -2000
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "7f992fa1-1532-41f4-bda7-dbdcdbf94d8a",
+              "leftValue": "={{ $json.stars }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bdefac51-ce8a-4103-92fa-7db8c83abf89",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -3296,
+        -2000
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "reviews",
+        "include": "specifiedFields",
+        "fieldsToInclude": "reviewId,name,text,stars,publishAt,publishedAtDate,reviewUrl,reviewerId,reviewerUrl,reviewerPhotoUrl,reviewerNumberOfReviews,isLocalGuide,reviewImageUrls",
+        "options": {}
+      },
+      "id": "c859f543-b963-4005-9b62-0c3896be914a",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -3088,
+        -2000
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const photos = [];\n$('AWS Rekognition').all().forEach((item, index) => {\n  if (item.json.FaceDetails.length === 0) {\n    photos.push($('Get Image').all()[index])\n  }\n})\n\nreturn photos;"
+      },
+      "id": "3dbf76e4-7caa-4754-84a6-8bf3f72f9092",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2448,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "reviews",
+              "fieldValue": "={{ $json.reviews }}"
+            }
+          ]
+        }
+      },
+      "id": "8db5a3cd-6c2d-40e9-9070-d31c257fefb4",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2864,
+        -2000
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "business_name",
+              "fieldValue": "={{ $json.displayName }}"
+            },
+            {
+              "fieldId": "website",
+              "fieldValue": "={{ $json.url }}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{ $json.address }}"
+            },
+            {
+              "fieldId": "opening",
+              "fieldValue": "={{ $json.currentOpeningHours }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.phoneUnformatted }}"
+            },
+            {
+              "fieldId": "place_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "bio",
+              "fieldValue": "={{ $json.description }}"
+            }
+          ]
+        }
+      },
+      "id": "add859a9-7de6-4650-9d4c-07727035f950",
+      "name": "Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3088,
+        -1840
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "pics",
+              "fieldValue": "={{ $json.data.map(item => item.url ) }}"
+            }
+          ]
+        }
+      },
+      "id": "dec5ec98-ae0f-4062-b95b-f9b3c6da5311",
+      "name": "Supabase2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        -2176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd71ba78-fb53-4643-9ff3-863aeb18ed54",
+              "name": "url",
+              "value": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/public/{{ $json.Key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "025dcd68-89b4-4424-bf88-fd8adc0d2418",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -1840,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "f99961de-d561-46df-a3ec-1b6aad0add2b",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1000,
+        "height": 1000,
+        "options": {
+          "format": "jpeg"
+        }
+      },
+      "id": "2cbc8cd9-e8e9-4843-a96a-e5e014d49931",
+      "name": "Edit Image",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        -2864,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1000,
+        "height": 1000,
+        "options": {
+          "format": "webp"
+        }
+      },
+      "id": "b1f39ae4-732c-4bd2-ac92-dce745dcb5c8",
+      "name": "Edit Image1",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_GdhlaT8oThA8OHwpMabRbSznwbIHru33SCjv",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "memory",
+              "value": "1024"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"deeperCityScrape\": false,\n    \"includeWebResults\": false,\n    \"language\": \"it\",\n    \"maxCrawledPlacesPerSearch\": 1,\n    \"maxImages\": 15,\n    \"maxQuestions\": 0,\n    \"maxReviews\": 15,\n    \"onlyDataFromSearchPage\": false,\n    \"reviewsSort\": \"highestRanking\",\n    \"reviewsStartDate\": \"{{ $now.minus(24, \"months\").format(\"yyyy-MM-dd\") }}\",\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapeResponseFromOwnerText\": true,\n    \"scrapeReviewId\": true,\n    \"scrapeReviewUrl\": true,\n    \"scrapeReviewerId\": true,\n    \"scrapeReviewerName\": true,\n    \"scrapeReviewerUrl\": true,\n    \"skipClosedPlaces\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.body.url }}\"\n        }\n    ]\n}",
+        "options": {}
+      },
+      "id": "a86ad2a4-0856-457e-a125-d0386e6f4e38",
+      "name": "Business Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3840,
+        -1840
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "i61VzWLSuhC6pS8U",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://places.googleapis.com/v1/places/{{ $json.placeId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "languageCode",
+              "value": "it"
+            },
+            {
+              "name": "regionCode",
+              "value": "IT"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "currentOpeningHours"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00f72186-b267-435d-ae62-ac8d23bda562",
+      "name": "Opening Hours",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3520,
+        -1840
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ebbF8krzmhw1avhF",
+          "name": "Unnamed credential"
+        },
+        "httpBearerAuth": {
+          "id": "fylbaxggsUohOnOI",
+          "name": "Bearer Auth account"
+        },
+        "httpHeaderAuth": {
+          "id": "29m1ieHbuID6ruRO",
+          "name": "Header Auth account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.imageUrls }}",
+        "options": {}
+      },
+      "id": "78c7d11a-2b9c-4718-9499-93fa31a955ab",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3088,
+        -2176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/business_photos/{{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "={{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "12c5abec-c930-4b2c-a9c6-000a4b2435c2",
+      "name": "Upload Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2048,
+        -2176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-profile-scraping",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "26d0cc33-7a60-47e8-9e08-d67663f77d63",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -4064,
+        -1840
+      ],
+      "webhookId": "83041d96-c31a-4fd9-8f4a-35913e0bf8e4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1eaf60a-470f-4b01-8847-9dfe17a4462d",
+              "leftValue": "={{ $json.imageUrls }}",
+              "rightValue": "https://lh5",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "2ec814e8-981d-4b69-b064-f63b5c58ef57",
+              "leftValue": "={{ $json.imageUrls }}",
+              "rightValue": "https://lh3",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "31966762-2dbc-4943-b5b3-246e40023fae",
+      "name": "Filter3",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -3296,
+        -2176
+      ]
+    }
+  ],
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS Rekognition": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Supabase2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "AWS Rekognition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image1": {
+      "main": [
+        [
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business Info": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Opening Hours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opening Hours": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Business Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.lorenzodelia.com",
+            "user-agent": "Bubble",
+            "content-length": "136",
+            "accept-encoding": "gzip, deflate",
+            "baggage": "bubblegroup.client.version=7b0e22a023e0231e077a68ce2c2d8d61c3fd9b4f,bubblegroup.client.commit_timestamp=1748570694000,bubblegroup.http.route=workflow%2Fstart,bubblegroup.http.host=risteco.app,bubblegroup.workflow.appname=qrprojectcopy,bubblegroup.workflow.app_version=live,bubblegroup.workflow.situation=page_wf,bubblegroup.workflow.id=bTKjB0,bubblegroup.workflow.event.type=ButtonClicked,bubblegroup.workflow.action.id=bTKtg,bubblegroup.workflow.action.type=apiconnector2-bTKjj0.bTKtB",
+            "content-type": "application/json",
+            "traceparent": "00-4ea80133a69fdf5f65916b1b18a631b7-71687b804cd65bcb-01",
+            "x-bubble-depth": "1",
+            "x-forwarded-for": "34.220.17.110",
+            "x-forwarded-host": "n8n.lorenzodelia.com",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "url": "https://www.google.com/maps/place/?q=place_id:ChIJD7wM-lY3RBMRbw6zGDKheuI",
+            "profiles_id": "41b4f87d-11d2-43ba-bc73-52a238925625"
+          },
+          "webhookUrl": "https://n8n.lorenzodelia.com/webhook/b741b4b9-9bfe-4a3c-abf5-9a09376d8495",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Business Info": [
+      {
+        "json": {
+          "title": "CIRCUS LAMPEDUSA",
+          "subTitle": null,
+          "description": null,
+          "price": "1-20 €",
+          "categoryName": "Pub",
+          "address": "Piazza Lampedusa, 17, 73026 San Foca LE, Italia",
+          "neighborhood": null,
+          "street": "Piazza Lampedusa, 17",
+          "city": "San Foca",
+          "postalCode": "73026",
+          "state": "Provincia di Lecce",
+          "countryCode": "IT",
+          "website": "https://risteco.app/business/circus-lampedusa-q5jxmu",
+          "phone": "+39 320 552 5789",
+          "phoneUnformatted": "+393205525789",
+          "claimThisBusiness": false,
+          "location": {
+            "lat": 40.2996576,
+            "lng": 18.4016661
+          },
+          "locatedIn": null,
+          "plusCode": "7CX2+VM San Foca, Provincia di Lecce, Italia",
+          "menu": "https://4menu.4cloudoffice.com/menu/eyJBdXRoVmVyc2lvbiI6IjEuMCIsIlNpdGVJZCI6IjIwNzEwIn0uYThiN2E3YjgxNjc2ZTYxODA4ZjhiZjc0Zjg1ZWRlYzg1ODA1MTAzZA==",
+          "totalScore": 4.6,
+          "permanentlyClosed": false,
+          "temporarilyClosed": false,
+          "placeId": "ChIJD7wM-lY3RBMRbw6zGDKheuI",
+          "categories": [
+            "Pub"
+          ],
+          "fid": "0x13443756fa0cbc0f:0xe27aa13218b30e6f",
+          "cid": "16319533436265238127",
+          "reviewsCount": 175,
+          "reviewsDistribution": {
+            "oneStar": 3,
+            "twoStar": 2,
+            "threeStar": 10,
+            "fourStar": 35,
+            "fiveStar": 125
+          },
+          "imagesCount": 45,
+          "imageCategories": [
+            "Tutte",
+            "Menu",
+            "Video",
+            "Cibi e bevande",
+            "Atmosfera",
+            "Dal proprietario",
+            "Street View e foto sferiche"
+          ],
+          "scrapedAt": "2025-12-19T17:08:21.131Z",
+          "reserveTableUrl": null,
+          "googleFoodUrl": null,
+          "hotelStars": null,
+          "hotelDescription": null,
+          "checkInDate": null,
+          "checkOutDate": null,
+          "similarHotelsNearby": null,
+          "hotelReviewSummary": null,
+          "hotelAds": [],
+          "popularTimesLiveText": "In questo momento: Solitamente non molto affollato",
+          "popularTimesLivePercent": null,
+          "popularTimesHistogram": {
+            "Su": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 35
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 40
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 45
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 40
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 42
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 47
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 57
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 54
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 21
+              }
+            ],
+            "Mo": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 23
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 40
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 42
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 42
+              }
+            ],
+            "Tu": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 23
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 26
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 26
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 11
+              }
+            ],
+            "We": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 26
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 26
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 9
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 9
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 11
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 26
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 35
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 50
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 54
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 57
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 38
+              }
+            ],
+            "Th": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 11
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 11
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 11
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 11
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 16
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 50
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 54
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 69
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 66
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 61
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 26
+              }
+            ],
+            "Fr": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 14
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 23
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 19
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 47
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 47
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 47
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 38
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 35
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 30
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 30
+              }
+            ],
+            "Sa": [
+              {
+                "hour": 5,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 6,
+                "occupancyPercent": 21
+              },
+              {
+                "hour": 7,
+                "occupancyPercent": 23
+              },
+              {
+                "hour": 8,
+                "occupancyPercent": 30
+              },
+              {
+                "hour": 9,
+                "occupancyPercent": 33
+              },
+              {
+                "hour": 10,
+                "occupancyPercent": 35
+              },
+              {
+                "hour": 11,
+                "occupancyPercent": 30
+              },
+              {
+                "hour": 12,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 13,
+                "occupancyPercent": 28
+              },
+              {
+                "hour": 14,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 15,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 16,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 17,
+                "occupancyPercent": 0
+              },
+              {
+                "hour": 18,
+                "occupancyPercent": 42
+              },
+              {
+                "hour": 19,
+                "occupancyPercent": 64
+              },
+              {
+                "hour": 20,
+                "occupancyPercent": 73
+              },
+              {
+                "hour": 21,
+                "occupancyPercent": 88
+              },
+              {
+                "hour": 22,
+                "occupancyPercent": 90
+              },
+              {
+                "hour": 23,
+                "occupancyPercent": 100
+              },
+              {
+                "hour": 0,
+                "occupancyPercent": 76
+              },
+              {
+                "hour": 1,
+                "occupancyPercent": 47
+              }
+            ]
+          },
+          "openingHours": [
+            {
+              "day": "venerdì",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "sabato",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "domenica",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "lunedì",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "martedì",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "mercoledì",
+              "hours": "06 to 14, 18 to 02"
+            },
+            {
+              "day": "giovedì",
+              "hours": "06 to 14, 18 to 02"
+            }
+          ],
+          "additionalOpeningHours": null,
+          "openingHoursBusinessConfirmationText": null,
+          "peopleAlsoSearch": [
+            {
+              "category": "Ricerche correlate",
+              "title": "Gringo Tapas e Social Drink",
+              "reviewsCount": 277,
+              "totalScore": 4.8
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "IQOS PREMIUM PARTNER MELENDUGNO",
+              "reviewsCount": 284,
+              "totalScore": 4.3
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Sacanfò",
+              "reviewsCount": 1548,
+              "totalScore": 4.2
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Alma Santera",
+              "reviewsCount": 146,
+              "totalScore": 4.2
+            }
+          ],
+          "placesTags": [],
+          "reviewsTags": [
+            {
+              "title": "panini",
+              "count": 11
+            },
+            {
+              "title": "colazione",
+              "count": 10
+            },
+            {
+              "title": "bambini",
+              "count": 8
+            },
+            {
+              "title": "prezzo",
+              "count": 8
+            },
+            {
+              "title": "cornetti",
+              "count": 6
+            },
+            {
+              "title": "sera",
+              "count": 6
+            },
+            {
+              "title": "aperitivo",
+              "count": 5
+            },
+            {
+              "title": "giochi",
+              "count": 5
+            },
+            {
+              "title": "tavoli",
+              "count": 5
+            },
+            {
+              "title": "pasticciotti",
+              "count": 3
+            }
+          ],
+          "additionalInfo": {
+            "Servizio": [
+              {
+                "Tavoli all'aperto": true
+              },
+              {
+                "Asporto": true
+              },
+              {
+                "Consumazione sul posto": true
+              },
+              {
+                "Consegna a domicilio": false
+              }
+            ],
+            "In evidenza": [
+              {
+                "Musica dal vivo": true
+              },
+              {
+                "Ottimi cocktail": true
+              },
+              {
+                "Spettacoli dal vivo": true
+              },
+              {
+                "Sport": true
+              },
+              {
+                "Vasta selezione di birre": true
+              }
+            ],
+            "Consigliato per": [
+              {
+                "Mangiare da soli": true
+              }
+            ],
+            "Accessibilità": [
+              {
+                "Bagno accessibile in sedia a rotelle": true
+              },
+              {
+                "Ingresso accessibile in sedia a rotelle": true
+              },
+              {
+                "Parcheggio accessibile in sedia a rotelle": true
+              }
+            ],
+            "Proposte": [
+              {
+                "Alcolici": true
+              },
+              {
+                "Ballo": true
+              },
+              {
+                "Birra": true
+              },
+              {
+                "Cibo": true
+              },
+              {
+                "Cibo al bar": true
+              },
+              {
+                "Cibo per l'happy hour": true
+              },
+              {
+                "Cocktail": true
+              },
+              {
+                "Drink per l'happy hour": true
+              },
+              {
+                "Superalcolici": true
+              },
+              {
+                "Vino": true
+              }
+            ],
+            "Ristorazione": [
+              {
+                "Posti a sedere": true
+              },
+              {
+                "Servizio al tavolo": true
+              }
+            ],
+            "Servizi": [
+              {
+                "Toilette": true
+              }
+            ],
+            "Ambiente": [
+              {
+                "Accogliente": true
+              },
+              {
+                "Casual": true
+              },
+              {
+                "Di tendenza": true
+              },
+              {
+                "Tranquillo": true
+              }
+            ],
+            "Frequentazione": [
+              {
+                "Gruppi": true
+              },
+              {
+                "Turisti": true
+              }
+            ],
+            "Pianificazione": [
+              {
+                "Accetta prenotazioni": true
+              }
+            ],
+            "Pagamenti": [
+              {
+                "Carte di credito": true
+              },
+              {
+                "Carte di debito": true
+              },
+              {
+                "PagamentI mobile NFC": true
+              },
+              {
+                "Carte di credito": true
+              }
+            ],
+            "Bambini": [
+              {
+                "Adatto ai bambini": true
+              }
+            ],
+            "Parcheggio": [
+              {
+                "Molti posti auto": true
+              },
+              {
+                "Parcheggio gratuito": true
+              },
+              {
+                "Parcheggio in strada gratuito": true
+              }
+            ],
+            "Animali domestici": [
+              {
+                "Cani ammessi": true
+              }
+            ]
+          },
+          "gasPrices": [],
+          "questionsAndAnswers": [],
+          "updatesFromCustomers": null,
+          "url": "https://www.google.com/maps/search/?api=1&query=CIRCUS%20LAMPEDUSA&query_place_id=ChIJD7wM-lY3RBMRbw6zGDKheuI",
+          "searchString": "Direct Detail URL: https://www.google.com/maps/place/?q=place_id:ChIJD7wM-lY3RBMRbw6zGDKheuI",
+          "language": "it",
+          "inputPlaceId": null,
+          "isAdvertisement": false,
+          "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwBUTtzLwfdn6FZuRJ38lj-8jjFxmJddnwPBNsLgSzC6qGWcyy0HA3BQcSYuIkXbZujeusCp8-StXyyVZf9XOYb7tejsYhMtf17-XGH5DgSCRgBYb11tAuQ_aRYrsL2wL6RTDl7=w408-h306-k-no",
+          "kgmid": "/g/11s3dg5t30",
+          "userPlaceNote": null,
+          "webResults": [],
+          "tableReservationLinks": [],
+          "bookingLinks": [],
+          "orderBy": [],
+          "restaurantData": {
+            "tableReservationProvider": null
+          },
+          "ownerUpdates": [],
+          "imageUrls": [
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwBUTtzLwfdn6FZuRJ38lj-8jjFxmJddnwPBNsLgSzC6qGWcyy0HA3BQcSYuIkXbZujeusCp8-StXyyVZf9XOYb7tejsYhMtf17-XGH5DgSCRgBYb11tAuQ_aRYrsL2wL6RTDl7=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/p/AF1QipOUBqf2pp4ZITEwSEU3LZccA9ky1fwMl7Y_QVny=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSylOnDAc5fqijrvWYpqCioRLKADEtZUnP0trtUTGEiZYD2qdXc44aasSYQSHCNiqlR9amuKIlR-O1KlieDfKsV6blanbTbaFBvWqlsAAno2hcaXlGBgTpvLVRmE_Lsldrqo5lZv=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxub5src5PMxcFxw33dnwTvr2ZRLuki2-_LQwFy-YTZ5i9YKYVaTYD4bEKh-muAQC9Z9c_2HMcKY0wX2KRipcXbzXI0BX7JSFaDODjb3zXaZc1eA7LYhGMF4uscXAd1BBTFPOs2=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSykAcFkv3upiBnx_i6G71ZQAMlQs1Pm3sP045IHe6Mcjmu-dQ6DIBgT5xlPAkxixh3s_wOppiHtV7WxtnWXnSvMRtStp5kTiaUpzKCPvHwY93Jbh0Fs7FFP5Yoe50U7ICdvOKr_=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSy_ZvgPsne_wt_Jo_RViLu25FZhjoxeZbg_LHJaLagE4hLqzig-aVa6ifPGjAA7fz2NlFqKynLwx4ONaMpAe5jE2cLyA2F5k5qRuPLgtszdbYg1deCqzFO-fv6R5WiDHZVFCAXviA=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzs85mNrz7d8FoX_MVPiqZ2YUUfornl0VTIJGTZzjRu2w7rLPIywGLR5xdacld8H7mIbubENC8JxDpn2UqFrgD1AvvV73xPscZjXG03CfyLgxsPEDOsBE7_X4BW_dKlpieFSKWV7Q=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSz1CSwnDTvA8egXB4mgXBAKr7E_pls25JVTJfm7fp98HtJ_q0XnM6eauUqDEb7aYWYxVpYdX7ciFx789ecEHyE0b3Ixi0I17a7UhCzVhtkpuovsCIh13ahB8Fk3x6N7KMHbjeSv=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxro8tZ_oa1P0B6SnaYV-41sNaiN_KvnveCyY-NwP1mou7k8YpHFegLwHrwrWTCRXggZbKIpIFft9bORtmmrYeWyS_LQv_qnj7sC5a0iJlD8qxikTugIjhVsBr4tIK1vAziaCkCmjB7frmS=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxlagUJkyE-9qhkAQ5dCpt3a6FJcdxFASlvpyRaFI335X4fBXWoyolDQoQtanuFEDguh8h-_loj0YVJ0LsYjih9emrTCsGZIQsJWsaG7Rl4sIQJEob_eq3ld-8c85ebRuoaIVuz=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyVo_JqWCqfLKq74PKApkl40Pmtvx3kZEyXoMUmURLBUvOxnOtJZPuSExXDK_7ekKjvHRLf-FDsaOvQzwILIR3jQGdkTzpR9m-_uvPKeXSQjczbVeFuF3SIFe0Jdsj9bFqmUgh4=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/p/AF1QipPpgi30s6cA86H7FQ6aDYQ2iZONhhccR4BKe73M=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzkdGJhsIN_fjcT6TD3zmmbxXsThr-WzHNmhRwQA2LswDt911zgr4dMfb0Apyj64pYU0kH4fdBgj_yHJS7lE0spdTnhLcMY3_UXjSz9utAYYIoNtJganUynkduQsQhQ_rjYiLY=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwrqFwpX-DRnn00JMck6V6vAsfsxOyPkLyYqAG37j51R_PNe_BGTeJPX9I4bo284ZeMZCnhkRljToTHxBkbGp0coHHnQBtyK52LtAz3IvbPsFh0xYGlPc2AvK7lDcSvaNuk6mpZfA=w1920-h1080-k-no",
+            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSx0nPT88EW4RCCI0jSjIbeCRwsufDwyYSFx517LbokK58OEthlBwzcTg9tfy6-XfaMoaPtrt9xa-VIuoxTxbZDDBXmZRo4ARfKn6gWfZgOGdY1pHQQruDTtIve_z_tcNAa9OVC4gsstasvs=w1920-h1080-k-no"
+          ],
+          "images": null,
+          "reviews": [
+            {
+              "reviewerId": "107111430138362751628",
+              "reviewerUrl": "https://www.google.com/maps/contrib/107111430138362751628?hl=it",
+              "name": "Francesco J Loseto",
+              "reviewerNumberOfReviews": 299,
+              "isLocalGuide": true,
+              "reviewerPhotoUrl": "https://lh3.googleusercontent.com/a-/ALV-UjWhr5bbsijRm9v6O988SQP5qoY9shny1MXPE9y-xx6x9IBjbs5z=s1920-c-rp-mo-ba6-br100",
+              "text": "Locale con un ampio spazio esterno dove poter assaggiare hamburger o piatti più leggeri. Nel nostro caso abbiamo preso due hamburger e delle pepite di pollo molto buone. Servizio veloce e attento.",
+              "textTranslated": null,
+              "publishAt": "un anno fa",
+              "publishedAtDate": "2024-07-23T10:33:11.271Z",
+              "likesCount": 0,
+              "reviewId": "ChdDSUhNMG9nS0VJQ0FnSUNiaEk2dGdBRRAB",
+              "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNiaEk2dGdBRRAB!2m1!1s0x0:0xe27aa13218b30e6f!3m1!1s2@1:CIHM0ogKEICAgICbhI6tgAE%7CCgwI543-tAYQ8JilgQE%7C?hl=it",
+              "reviewOrigin": "Google",
+              "stars": 5,
+              "rating": null,
+              "responseFromOwnerDate": null,
+              "responseFromOwnerText": null,
+              "reviewImageUrls": [
+                "https://lh3.googleusercontent.com/geougc-cs/AMBA38v7lSBdbJ2B_OHnUYPREGPG9KZkEDSxUrMFgA3NF-imIUVchrw-Bo7nMVeyz62bhgMv5WSFPq1Sg1RXxhJElZNaYQnoLTXBTurARjy3s98hdpVkTlNN7mKYnzzTk7CMwA4G8NOA",
+                "https://lh3.googleusercontent.com/geougc-cs/AMBA38vhvo3qFGycR0SdqbyPu6DV1V2cba44Xid2ByQWRQGRbkxnABCj93appcvaHhtdzWkgZsWnCyS4etvxUHbwJFwgHYx4y9GxcFnalkFbnMnSPDFuetLr-uy8Tn-fZ99W8k0h0WNmyA",
+                "https://lh3.googleusercontent.com/geougc-cs/AMBA38sFUPQd1mnZ4Pwi4hwagwMckWKHxWYrsRuf1-9VQ_wxzw-FWWNHyGC2o3TceCpIke9G5LpMNqxGFUBPLJ5BTtM9kJlvR9ZAlYIx6MC7mE92S8Z8YisjjACEANPeckfcAmVWR__c",
+                "https://lh3.googleusercontent.com/geougc-cs/AMBA38v02lb82M5yBXD9zyS5VKT8qT1kyWNaid4gyggk-rr2VN8omEhUhXG4AmgbZrtdXcWPKqi5wutNofY1XemiQYUIfUZIu5H_cTCrS_jHAc_wOLhBPQVJ_oY2IY3kEHceH1ROIC9DAA"
+              ],
+              "reviewContext": {
+                "Prezzo a persona": "10-20 €"
+              },
+              "reviewDetailedRating": {
+                "Cibo": 5,
+                "Servizio": 5,
+                "Ambiente": 5
+              },
+              "visitedIn": null,
+              "originalLanguage": "it",
+              "translatedLanguage": null
+            },
+            {
+              "reviewerId": "113321891950394281961",
+              "reviewerUrl": "https://www.google.com/maps/contrib/113321891950394281961?hl=it",
+              "name": "Lorenzo Catamo",
+              "reviewerNumberOfReviews": 8,
+              "isLocalGuide": true,
+              "reviewerPhotoUrl": "https://lh3.googleusercontent.com/a-/ALV-UjXzqbC277TtlZSoW5f9vhDHHxxCI7SSIhKW197pg5Sq7txUWx7BcQ=s1920-c-rp-mo-ba2-br100",
+              "text": "Un locale che riesce a coniugare la semplicità di un panino con la qualità delle materie prime.\nIl menu offre un ampia gamma di piatti per tutte le esigenze. I panini e gli hamburger sono davvero eccellenti: carne succosa, pane croccante fuori e morbido dentro, condimenti abbondanti. Una menzione speciale va alle bombette piccanti, saporite e dal giusto grado di piccantezza, e alla tagliata di manzo e di pollo, servita con grana e rucola, perfetta per chi cerca un piatto ricco ma leggero.\nMa il vero punto di forza è il personale: gentilezza, attenzione e cura per ogni dettaglio. Dalla presa dell’ordine alla presentazione del piatto, tutto trasmette passione e professionalità. Ci si sente accolti come a casa, ma con la qualità di un servizio di alto livello.\nUn'altro dettaglio che rende il locale davvero speciale è la vastissima selezione di gin, perfetta per accompagnare il pasto o per un dopocena sofisticato. Gin italiani, internazionali, aromatizzati e classici: ce n’è per tutti i gusti, serviti con cura e spesso accompagnati da toniche e guarnizioni pensate per esaltarne le caratteristiche. Un vero paradiso per gli appassionati!\nChe si tratti di una cena tra amici, un pasto veloce o una serata rilassata all’aperto, Circus è una tappa obbligata a San Foca. Tornerete sicuramente. Consigliatissimo!",
+              "textTranslated": null,
+              "publishAt": "5 mesi fa",
+              "publishedAtDate": "2025-06-30T13:32:23.814Z",
+              "likesCount": 0,
+              "reviewId": "Ci9DQUlRQUNvZENodHljRjlvT201TmFIWmhWVFpWWlhZNVRsTkVNMDlyWDNSdFJsRRAB",
+              "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT201TmFIWmhWVFpWWlhZNVRsTkVNMDlyWDNSdFJsRRAB!2m1!1s0x0:0xe27aa13218b30e6f!3m1!1s2@1:CAIQACodChtycF9oOm5NaHZhVTZVZXY5TlNEM09rX3RtRlE%7C0cNd6bkXK7-%7C?hl=it",
+              "reviewOrigin": "Google",
+              "stars": 5,
+              "rating": null,
+              "responseFromOwnerDate": null,
+              "responseFromOwnerText": null,
+              "reviewImageUrls": [],
+              "reviewContext": {
+                "Prezzo a persona": "20-30 €",
+                "Livello di rumore": "Basso, facile parlare",
+                "Dimensione gruppo": "Adatto a gruppi di tutte le dimensioni",
+                "Tempo di attesa": "Nessuna attesa",
+                "Opzioni per il parcheggio": "Parcheggio in strada senza costi"
+              },
+              "reviewDetailedRating": {
+                "Cibo": 5,
+                "Servizio": 5,
+                "Ambiente": 5
+              },
+              "visitedIn": null,
+              "originalLanguage": "it",
+              "translatedLanguage": null
+            },
+            {
+              "reviewerId": "108524270632691215344",
+              "reviewerUrl": "https://www.google.com/maps/contrib/108524270632691215344?hl=it",
+              "name": "Serena Sicuro",
+              "reviewerNumberOfReviews": 4,
+              "isLocalGuide": false,
+              "reviewerPhotoUrl": "https://lh3.googleusercontent.com/a/ACg8ocLSh1HziSWCltYie0mubhtd67A0i2S8V6_LEMFi0DIQLbC8kA=s1920-c-rp-mo-br100",
+              "text": "Il personale è sempre cortese e il servizio veloce ed efficiente. Il cibo di qualità; ci siamo stati spesso sia per colazione che per cena.\nParticolarmente fantastici sono anche i cocktail ✨🍸🍹",
+              "textTranslated": null,
+              "publishAt": "4 mesi fa",
+              "publishedAtDate": "2025-08-18T09:55:08.667Z",
+              "likesCount": 0,
+              "reviewId": "Ci9DQUlRQUNvZENodHljRjlvT2s5U1lrNXFWV052TkVsa1lsZ3dlR1l3YW1seE4yYxAB",
+              "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s5U1lrNXFWV052TkVsa1lsZ3dlR1l3YW1seE4yYxAB!2m1!1s0x0:0xe27aa13218b30e6f!3m1!1s2@1:CAIQACodChtycF9oOk9SYk5qVWNvNElkYlgweGYwamlxN2c%7C0ccjWwbnvM6%7C?hl=it",
+              "reviewOrigin": "Google",
+              "stars": 5,
+              "rating": null,
+              "responseFromOwnerDate": null,
+              "responseFromOwnerText": null,
+              "reviewImageUrls": [],
+              "reviewContext": {
+                "Prezzo a persona": "10-20 €"
+              },
+              "reviewDetailedRating": {
+                "Cibo": 5,
+                "Servizio": 5,
+                "Ambiente": 5
+              },
+              "visitedIn": null,
+              "originalLanguage": "it",
+              "translatedLanguage": null
+            }
+          ],
+          "leadsEnrichment": []
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "29d19619-25b6-4b62-b86f-d5995540ea94",
+  "activeVersionId": "29d19619-25b6-4b62-b86f-d5995540ea94",
+  "versionCounter": 16,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-12-19T14:56:41.109Z",
+      "createdAt": "2025-12-19T14:56:41.109Z",
+      "role": "workflow:owner",
+      "workflowId": "VNeXzFrTRiBOWuUR",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-12-16T17:31:31.179Z",
+      "createdAt": "2025-12-16T17:31:31.179Z",
+      "id": "OjjkBNoaWPU9OMR1",
+      "name": "Risteco"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-22T17:20:43.863Z",
+    "createdAt": "2025-12-22T17:20:43.863Z",
+    "versionId": "29d19619-25b6-4b62-b86f-d5995540ea94",
+    "workflowId": "VNeXzFrTRiBOWuUR",
+    "nodes": [
+      {
+        "parameters": {
+          "binaryData": true,
+          "binaryPropertyName": "=data",
+          "additionalFields": {}
+        },
+        "id": "f022e6f7-52cf-4701-8ddb-ecef9a1cffc4",
+        "name": "AWS Rekognition",
+        "type": "n8n-nodes-base.awsRekognition",
+        "typeVersion": 1,
+        "position": [
+          -2640,
+          -2176
+        ],
+        "credentials": {
+          "aws": {
+            "id": "LklIv866uFIK3Xdn",
+            "name": "AWS (IAM) account 3"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "imageUrls",
+          "options": {}
+        },
+        "id": "fdd6eee6-e920-4f9d-b9b8-d9fb4e940d38",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -3520,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "b037f82b-f41a-482c-9639-e414f89dcac8",
+                "name": "id",
+                "value": "={{ $('Business Info').item.json.placeId }}",
+                "type": "string"
+              },
+              {
+                "id": "1e1fdcfc-1933-4e97-a360-918c09c0f45b",
+                "name": "displayName",
+                "value": "={{ $('Business Info').item.json.title }}",
+                "type": "string"
+              },
+              {
+                "id": "352b35d8-939c-43de-bbd5-4f65c4d7fb5a",
+                "name": "address",
+                "value": "={{ $('Business Info').item.json.address }}",
+                "type": "string"
+              },
+              {
+                "id": "b366441c-adbe-4b5d-ab6f-da9ae550bb69",
+                "name": "currentOpeningHours",
+                "value": "={{ $json.currentOpeningHours.weekdayDescriptions.join(\"\\n\") }}",
+                "type": "string"
+              },
+              {
+                "id": "b940973b-e020-4fc9-a85b-fd760706d2f7",
+                "name": "totalScore",
+                "value": "={{ $('Business Info').item.json.totalScore }}",
+                "type": "number"
+              },
+              {
+                "id": "80d2bdda-7e92-4869-ab61-2707b0032d5b",
+                "name": "reviewsCount",
+                "value": "={{ $('Business Info').item.json.reviewsCount }}",
+                "type": "number"
+              },
+              {
+                "id": "d13492bc-61a2-4f47-8451-6560f3e0c7b0",
+                "name": "phone",
+                "value": "={{ $('Business Info').item.json.phone }}",
+                "type": "string"
+              },
+              {
+                "id": "f03521f0-71ac-4dd1-b1f0-c91cc3a27bc2",
+                "name": "phoneUnformatted",
+                "value": "={{ $('Business Info').item.json.phoneUnformatted }}",
+                "type": "string"
+              },
+              {
+                "id": "763f2b64-f2bb-4285-9fec-a69ccb467664",
+                "name": "description",
+                "value": "={{ $('Business Info').item.json.description }}",
+                "type": "string"
+              },
+              {
+                "id": "5691c691-6c48-4f64-9c9f-c8a02933f7c3",
+                "name": "price",
+                "value": "={{ $('Business Info').item.json.price }}",
+                "type": "string"
+              },
+              {
+                "id": "1c210b61-a004-4a70-b501-7f4947d829e2",
+                "name": "categoryName",
+                "value": "={{ $('Business Info').item.json.categoryName }}",
+                "type": "string"
+              },
+              {
+                "id": "e218b2a0-de2b-4528-9678-e301451dec2f",
+                "name": "url",
+                "value": "={{ $('Business Info').item.json.url }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "9565355f-77da-41f7-9168-f9c41546d33b",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          -3296,
+          -1840
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "reviews",
+          "options": {}
+        },
+        "id": "279834be-ac23-42fa-a21c-0210a8765638",
+        "name": "Split Out1",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -3520,
+          -2000
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "7f992fa1-1532-41f4-bda7-dbdcdbf94d8a",
+                "leftValue": "={{ $json.stars }}",
+                "rightValue": 4,
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "bdefac51-ce8a-4103-92fa-7db8c83abf89",
+        "name": "Filter",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          -3296,
+          -2000
+        ]
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "reviews",
+          "include": "specifiedFields",
+          "fieldsToInclude": "reviewId,name,text,stars,publishAt,publishedAtDate,reviewUrl,reviewerId,reviewerUrl,reviewerPhotoUrl,reviewerNumberOfReviews,isLocalGuide,reviewImageUrls",
+          "options": {}
+        },
+        "id": "c859f543-b963-4005-9b62-0c3896be914a",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -3088,
+          -2000
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const photos = [];\n$('AWS Rekognition').all().forEach((item, index) => {\n  if (item.json.FaceDetails.length === 0) {\n    photos.push($('Get Image').all()[index])\n  }\n})\n\nreturn photos;"
+        },
+        "id": "3dbf76e4-7caa-4754-84a6-8bf3f72f9092",
+        "name": "Code",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2448,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "reviews",
+                "fieldValue": "={{ $json.reviews }}"
+              }
+            ]
+          }
+        },
+        "id": "8db5a3cd-6c2d-40e9-9070-d31c257fefb4",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -2864,
+          -2000
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "business_name",
+                "fieldValue": "={{ $json.displayName }}"
+              },
+              {
+                "fieldId": "website",
+                "fieldValue": "={{ $json.url }}"
+              },
+              {
+                "fieldId": "address",
+                "fieldValue": "={{ $json.address }}"
+              },
+              {
+                "fieldId": "opening",
+                "fieldValue": "={{ $json.currentOpeningHours }}"
+              },
+              {
+                "fieldId": "phone_number",
+                "fieldValue": "={{ $json.phoneUnformatted }}"
+              },
+              {
+                "fieldId": "place_id",
+                "fieldValue": "={{ $json.id }}"
+              },
+              {
+                "fieldId": "bio",
+                "fieldValue": "={{ $json.description }}"
+              }
+            ]
+          }
+        },
+        "id": "add859a9-7de6-4650-9d4c-07727035f950",
+        "name": "Supabase1",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -3088,
+          -1840
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $('Webhook').item.json.body.profiles_id }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "pics",
+                "fieldValue": "={{ $json.data.map(item => item.url ) }}"
+              }
+            ]
+          }
+        },
+        "id": "dec5ec98-ae0f-4062-b95b-f9b3c6da5311",
+        "name": "Supabase2",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -1440,
+          -2176
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "bd71ba78-fb53-4643-9ff3-863aeb18ed54",
+                "name": "url",
+                "value": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/public/{{ $json.Key }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "025dcd68-89b4-4424-bf88-fd8adc0d2418",
+        "name": "Edit Fields1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          -1840,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "id": "f99961de-d561-46df-a3ec-1b6aad0add2b",
+        "name": "Aggregate1",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -1648,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "resize",
+          "width": 1000,
+          "height": 1000,
+          "options": {
+            "format": "jpeg"
+          }
+        },
+        "id": "2cbc8cd9-e8e9-4843-a96a-e5e014d49931",
+        "name": "Edit Image",
+        "type": "n8n-nodes-base.editImage",
+        "typeVersion": 1,
+        "position": [
+          -2864,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "resize",
+          "width": 1000,
+          "height": 1000,
+          "options": {
+            "format": "webp"
+          }
+        },
+        "id": "b1f39ae4-732c-4bd2-ac92-dce745dcb5c8",
+        "name": "Edit Image1",
+        "type": "n8n-nodes-base.editImage",
+        "typeVersion": 1,
+        "position": [
+          -2240,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_GdhlaT8oThA8OHwpMabRbSznwbIHru33SCjv",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpQueryAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "memory",
+                "value": "1024"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n    \"deeperCityScrape\": false,\n    \"includeWebResults\": false,\n    \"language\": \"it\",\n    \"maxCrawledPlacesPerSearch\": 1,\n    \"maxImages\": 15,\n    \"maxQuestions\": 0,\n    \"maxReviews\": 15,\n    \"onlyDataFromSearchPage\": false,\n    \"reviewsSort\": \"highestRanking\",\n    \"reviewsStartDate\": \"{{ $now.minus(24, \"months\").format(\"yyyy-MM-dd\") }}\",\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapeResponseFromOwnerText\": true,\n    \"scrapeReviewId\": true,\n    \"scrapeReviewUrl\": true,\n    \"scrapeReviewerId\": true,\n    \"scrapeReviewerName\": true,\n    \"scrapeReviewerUrl\": true,\n    \"skipClosedPlaces\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.body.url }}\"\n        }\n    ]\n}",
+          "options": {}
+        },
+        "id": "a86ad2a4-0856-457e-a125-d0386e6f4e38",
+        "name": "Business Info",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -3840,
+          -1840
+        ],
+        "credentials": {
+          "httpQueryAuth": {
+            "id": "i61VzWLSuhC6pS8U",
+            "name": "Query Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://places.googleapis.com/v1/places/{{ $json.placeId }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "languageCode",
+                "value": "it"
+              },
+              {
+                "name": "regionCode",
+                "value": "IT"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Goog-FieldMask",
+                "value": "currentOpeningHours"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "00f72186-b267-435d-ae62-ac8d23bda562",
+        "name": "Opening Hours",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -3520,
+          -1840
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "ebbF8krzmhw1avhF",
+            "name": "Unnamed credential"
+          },
+          "httpBearerAuth": {
+            "id": "fylbaxggsUohOnOI",
+            "name": "Bearer Auth account"
+          },
+          "httpHeaderAuth": {
+            "id": "29m1ieHbuID6ruRO",
+            "name": "Header Auth account 3"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.imageUrls }}",
+          "options": {}
+        },
+        "id": "78c7d11a-2b9c-4718-9499-93fa31a955ab",
+        "name": "Get Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -3088,
+          -2176
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/business_photos/{{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "supabaseApi",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "={{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {}
+            }
+          }
+        },
+        "id": "12c5abec-c930-4b2c-a9c6-000a4b2435c2",
+        "name": "Upload Image",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -2048,
+          -2176
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "create-profile-scraping",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "26d0cc33-7a60-47e8-9e08-d67663f77d63",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -4064,
+          -1840
+        ],
+        "webhookId": "83041d96-c31a-4fd9-8f4a-35913e0bf8e4"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "c1eaf60a-470f-4b01-8847-9dfe17a4462d",
+                "leftValue": "={{ $json.imageUrls }}",
+                "rightValue": "https://lh5",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "2ec814e8-981d-4b69-b064-f63b5c58ef57",
+                "leftValue": "={{ $json.imageUrls }}",
+                "rightValue": "https://lh3",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "id": "31966762-2dbc-4943-b5b3-246e40023fae",
+        "name": "Filter3",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          -3296,
+          -2176
+        ]
+      }
+    ],
+    "connections": {
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Filter3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AWS Rekognition": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Edit Image1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Supabase1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Supabase2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Image": {
+        "main": [
+          [
+            {
+              "node": "AWS Rekognition",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Image1": {
+        "main": [
+          [
+            {
+              "node": "Upload Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Business Info": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Opening Hours",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Opening Hours": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Image": {
+        "main": [
+          [
+            {
+              "node": "Edit Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload Image": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Business Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter3": {
+        "main": [
+          [
+            {
+              "node": "Get Image",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "raffaele lugibello",
+    "name": null,
+    "description": null
+  }
+}

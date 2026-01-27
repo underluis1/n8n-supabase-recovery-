@@ -1,0 +1,256 @@
+{
+  "updatedAt": "2024-11-02T19:48:20.000Z",
+  "createdAt": "2024-11-02T16:07:49.713Z",
+  "id": "jsvve05h3o4yJIIB",
+  "name": "Ai money principale senza memoria",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "c8e42d7e-fc28-4797-9a07-4f21888c0685",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        580,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "money",
+        "returnAll": true
+      },
+      "id": "0d0596b0-5d63-4954-8c43-e7f1205af5e5",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        960,
+        520
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DAj2UqfQGvKuvygI",
+          "name": "Supabase ai money"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "money",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $fromAI(\"name\") }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $fromAI(\"category\") }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $fromAI(\"type\") }}"
+            },
+            {
+              "fieldId": "price",
+              "fieldValue": "={{ $fromAI(\"price\") }}"
+            }
+          ]
+        }
+      },
+      "id": "af4d2387-028c-4533-bb79-771da0bd27fa",
+      "name": "create spesa",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        520
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DAj2UqfQGvKuvygI",
+          "name": "Supabase ai money"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "51b71686-91fc-4a52-8836-23dc5245f106",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.manualChatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        320
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fd479935-c021-4f55-9a85-05c43e94868e",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        760,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Sei un ai che permette all'utente di analizzare le sue spese quotidiane, il tuo compito è quello di aiutare l'utente a analizzare le sue spese.\n\nTutte le spese dell'utente sono su supabase con cui potrai interagire liberamente in lettura e scrittura. \n\nQuando l'utente ti chiede di inserire una nuova spesa o una nuova entrata devi sempre chiedergli:\n1. è un entrata o un uscita? Se è un entrata devi inserire \"type\": \"Entrata\". se è un uscita devi inserire \"type\": \"Uscita\".\n2. \"name\" il nome dell'entrata o dell'uscita.\n3. \"category\" la categoria dell'entrata o dell'uscita\n4.\"price\" il prezzo dell'entrata o dell'uscita che deve essere sempre con il punto ad esempio 3.15, ricordati che questo dato è un formato double e non striga quando lo inserisci a database, quindi non deve mai avere le virgolette\n\nquando hai queste informazioni inserisci questo record su supabase nella tabella money, ricordati che price è un numero e deve essere inserito senza virgolette"
+        }
+      },
+      "id": "701fdb09-97eb-4fef-8a5c-a161481e5a94",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        760,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create spesa": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7fe8cfac-5b1b-4d46-bb84-0ecd49972684",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2024-11-02T16:07:49.740Z",
+      "createdAt": "2024-11-02T16:07:49.740Z",
+      "role": "workflow:owner",
+      "workflowId": "jsvve05h3o4yJIIB",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,1087 @@
+{
+  "updatedAt": "2025-12-16T17:31:35.482Z",
+  "createdAt": "2025-12-16T15:29:28.224Z",
+  "id": "16baWbRLcYQPqBFn",
+  "name": "RISTECO PAGAMENTI stripe live",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "profiles",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "trial_ends_at",
+              "condition": "lt",
+              "keyValue": "={{ $now }}"
+            },
+            {
+              "keyName": "subscription_end_at",
+              "condition": "lt",
+              "keyValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -224
+      ],
+      "id": "ac450f66-6fca-4d1b-961e-eb5a75824d83",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pagamenti",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        -240
+      ],
+      "id": "120b8203-840b-4bd5-9df3-8185a84c76ce",
+      "name": "Webhook",
+      "webhookId": "91ad59c0-3e7a-493e-9f0b-458f4f4218fd"
+    },
+    {
+      "parameters": {
+        "events": [
+          "invoice.payment_failed",
+          "customer.subscription.deleted",
+          "order.payment_failed",
+          "payment_intent.payment_failed"
+        ]
+      },
+      "type": "n8n-nodes-base.stripeTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        32
+      ],
+      "id": "73044c1e-f61e-4743-ad08-4cdcd9995661",
+      "name": "Stripe Trigger",
+      "webhookId": "f1d2ebe9-0465-4938-9378-755ae2a88718",
+      "credentials": {
+        "stripeApi": {
+          "id": "RTCte8Klg0DvD6JB",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "98393291-dfd4-45ba-b095-10289d18e9b2",
+              "name": "email",
+              "value": "={{ $json.data.object.last_payment_error.payment_method.billing_details.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        32
+      ],
+      "id": "118c0d46-f93c-4e83-afd6-24340ec51beb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "events": [
+          "checkout.session.completed",
+          "customer.subscription.updated",
+          "invoice.payment_succeeded"
+        ]
+      },
+      "type": "n8n-nodes-base.stripeTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        448
+      ],
+      "id": "43a4bcf0-a9f4-41d5-97c1-a33426539c7f",
+      "name": "Stripe Trigger1",
+      "webhookId": "23b63e14-9f61-4c0a-b82c-4e8041e3d1a0",
+      "credentials": {
+        "stripeApi": {
+          "id": "RTCte8Klg0DvD6JB",
+          "name": "Stripe account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $('Stripe Trigger1').item.json.data.object.customer_details.email }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "site_enabled",
+              "fieldValue": "TRUE"
+            },
+            {
+              "fieldId": "subscription_end_at",
+              "fieldValue": "={{ $json.subscription_end_at }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        352
+      ],
+      "id": "08990a37-f5cf-4f11-a2ae-e5ffa098d9bf",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calcola timestamp tra un anno con ora completa\nconst now = new Date();\nconst oneYearLater = new Date(\n  now.getFullYear() + 1,\n  now.getMonth(),\n  now.getDate(),\n  now.getHours(),\n  now.getMinutes(),\n  now.getSeconds(),\n  now.getMilliseconds()\n);\n\n// Formato timestamp completo con timezone per Supabase\nreturn [\n  {\n    json: {\n      subscription_end_at: oneYearLater.toISOString(), // \"2026-12-16T17:21:00.000Z\"\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        352
+      ],
+      "id": "1c809f29-abd5-49a9-b9b4-4559a2175808",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d90e5ae2-cbc9-49eb-9535-11261fa64581",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "checkout.session.completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        448
+      ],
+      "id": "fd217af3-c9e0-47af-b459-3d130fa7ca6a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "condition": "eq",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "site_enabled",
+              "fieldValue": "FALSE"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        384,
+        32
+      ],
+      "id": "e31a8fe2-34a7-4edb-8d76-acaa46c1b0ec",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        352
+      ],
+      "id": "0b5bfbdf-3fbe-4dca-bfe8-2454653d776d",
+      "name": "Wait",
+      "webhookId": "ad9be2f1-1c49-42fb-8b43-882b415a9f59"
+    }
+  ],
+  "connections": {
+    "Get many rows": {
+      "main": [
+        []
+      ]
+    },
+    "Stripe Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Stripe Trigger": {
+      "webhookId": "we_1Sf3R1I5lCx7Ne32myH2Scoe",
+      "webhookEvents": [
+        "invoice.payment_failed",
+        "customer.subscription.deleted",
+        "order.payment_failed",
+        "payment_intent.payment_failed"
+      ],
+      "webhookSecret": "whsec_lAqpzgQWiO4ZLwNSUfSxPoBOc1FLfzzf"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Stripe Trigger1": {
+      "webhookId": "we_1Sf3R1I5lCx7Ne32blKiESyy",
+      "webhookEvents": [
+        "checkout.session.completed",
+        "customer.subscription.updated",
+        "invoice.payment_succeeded"
+      ],
+      "webhookSecret": "whsec_25xXEOgPRzDRGuspBUh7O2L9nHF3GcTz"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Stripe Trigger": [
+      {
+        "json": {
+          "id": "evt_3Sf11OI5lCx7Ne320DO0Eo53",
+          "object": "event",
+          "api_version": "2023-10-16",
+          "created": 1765902218,
+          "data": {
+            "object": {
+              "id": "pi_3Sf11OI5lCx7Ne320HR8izcw",
+              "object": "payment_intent",
+              "amount": 100,
+              "amount_capturable": 0,
+              "amount_details": {
+                "tip": {}
+              },
+              "amount_received": 0,
+              "application": null,
+              "application_fee_amount": null,
+              "automatic_payment_methods": null,
+              "canceled_at": null,
+              "cancellation_reason": null,
+              "capture_method": "automatic",
+              "client_secret": "pi_3Sf11OI5lCx7Ne320HR8izcw_secret_hPj8HEgp2aO8KwxuUkaCO3LnW",
+              "confirmation_method": "automatic",
+              "created": 1765902166,
+              "currency": "eur",
+              "customer": "cus_TcF3ymzptPApxK",
+              "customer_account": null,
+              "description": "Subscription creation",
+              "excluded_payment_method_types": null,
+              "invoice": null,
+              "last_payment_error": {
+                "code": "payment_intent_authentication_failure",
+                "doc_url": "https://stripe.com/docs/error-codes/payment-intent-authentication-failure",
+                "message": "The latest payment attempt of this PaymentIntent has failed or been canceled, and the attached payment method has been removed. You can try confirming again with a new payment method.",
+                "payment_method": {
+                  "id": "pm_1Sf129I5lCx7Ne328bs3tcYr",
+                  "object": "payment_method",
+                  "allow_redisplay": "limited",
+                  "billing_details": {
+                    "address": {
+                      "city": null,
+                      "country": "IT",
+                      "line1": null,
+                      "line2": null,
+                      "postal_code": null,
+                      "state": null
+                    },
+                    "email": "raffaelelugibello+test5@gmail.com",
+                    "name": "Raffaele Lugibello",
+                    "phone": null,
+                    "tax_id": null
+                  },
+                  "card": {
+                    "brand": "mastercard",
+                    "checks": {
+                      "address_line1_check": null,
+                      "address_postal_code_check": null,
+                      "cvc_check": "unchecked"
+                    },
+                    "country": "IT",
+                    "display_brand": "mastercard",
+                    "exp_month": 11,
+                    "exp_year": 2032,
+                    "fingerprint": "H6T5OsHAaz6cZhFt",
+                    "funding": "debit",
+                    "generated_from": null,
+                    "last4": "9803",
+                    "networks": {
+                      "available": [
+                        "mastercard"
+                      ],
+                      "preferred": null
+                    },
+                    "regulated_status": "unregulated",
+                    "three_d_secure_usage": {
+                      "supported": true
+                    },
+                    "wallet": null
+                  },
+                  "created": 1765902213,
+                  "customer": null,
+                  "customer_account": null,
+                  "livemode": true,
+                  "metadata": {},
+                  "type": "card"
+                },
+                "type": "invalid_request_error"
+              },
+              "latest_charge": null,
+              "livemode": true,
+              "metadata": {},
+              "next_action": null,
+              "on_behalf_of": null,
+              "payment_details": {
+                "customer_reference": null,
+                "order_reference": "cs_live_a1ss8mRvhVR50nRUx"
+              },
+              "payment_method": null,
+              "payment_method_configuration_details": null,
+              "payment_method_options": {
+                "card": {
+                  "installments": null,
+                  "mandate_options": null,
+                  "network": null,
+                  "request_three_d_secure": "automatic",
+                  "setup_future_usage": "off_session"
+                }
+              },
+              "payment_method_types": [
+                "card"
+              ],
+              "processing": null,
+              "receipt_email": null,
+              "review": null,
+              "setup_future_usage": "off_session",
+              "shipping": null,
+              "source": null,
+              "statement_descriptor": null,
+              "statement_descriptor_suffix": null,
+              "status": "requires_payment_method",
+              "transfer_data": null,
+              "transfer_group": null
+            }
+          },
+          "livemode": true,
+          "pending_webhooks": 1,
+          "request": {
+            "id": "req_rS0I9dDvW2I1fr",
+            "idempotency_key": "25ddcf92-9014-487b-8e61-511634609770"
+          },
+          "type": "payment_intent.payment_failed"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Stripe Trigger1": [
+      {
+        "json": {
+          "id": "evt_1Sf14SI5lCx7Ne32uBo7NlK6",
+          "object": "event",
+          "api_version": "2023-10-16",
+          "created": 1765902356,
+          "data": {
+            "object": {
+              "id": "cs_live_a1ss8mRvhVR50nRUxM0RGltNjuc6VkIftj7wp3PB19lTLK34weEzBMHcA8",
+              "object": "checkout.session",
+              "adaptive_pricing": {
+                "enabled": false
+              },
+              "after_expiration": null,
+              "allow_promotion_codes": null,
+              "amount_subtotal": 100,
+              "amount_total": 100,
+              "automatic_tax": {
+                "enabled": false,
+                "liability": null,
+                "provider": null,
+                "status": null
+              },
+              "billing_address_collection": null,
+              "branding_settings": {
+                "background_color": "#ffffff",
+                "border_style": "rounded",
+                "button_color": "#0074d4",
+                "display_name": "Raffaele Lugibello ",
+                "font_family": "default",
+                "icon": null,
+                "logo": null
+              },
+              "cancel_url": "https://preview--risteco-fatturazione.lovable.app/subscription?canceled=true",
+              "client_reference_id": null,
+              "client_secret": null,
+              "collected_information": {
+                "business_name": null,
+                "individual_name": null,
+                "shipping_details": null
+              },
+              "consent": null,
+              "consent_collection": null,
+              "created": 1765902151,
+              "currency": "eur",
+              "currency_conversion": null,
+              "custom_fields": [],
+              "custom_text": {
+                "after_submit": null,
+                "shipping_address": null,
+                "submit": null,
+                "terms_of_service_acceptance": null
+              },
+              "customer": "cus_TcF3ymzptPApxK",
+              "customer_account": null,
+              "customer_creation": null,
+              "customer_details": {
+                "address": {
+                  "city": null,
+                  "country": "IT",
+                  "line1": null,
+                  "line2": null,
+                  "postal_code": null,
+                  "state": null
+                },
+                "business_name": null,
+                "email": "raffaelelugibello+test3@gmail.com",
+                "individual_name": null,
+                "name": "Raffaele Lugibello",
+                "phone": null,
+                "tax_exempt": "none",
+                "tax_ids": []
+              },
+              "customer_email": null,
+              "discounts": [],
+              "expires_at": 1765988550,
+              "invoice": "in_1Sf14DI5lCx7Ne32tsOXFX73",
+              "invoice_creation": null,
+              "livemode": true,
+              "locale": null,
+              "metadata": {},
+              "mode": "subscription",
+              "origin_context": null,
+              "payment_intent": null,
+              "payment_link": null,
+              "payment_method_collection": "always",
+              "payment_method_configuration_details": {
+                "id": "pmc_1OlBPEI5lCx7Ne32w0K2D4jx",
+                "parent": null
+              },
+              "payment_method_options": {
+                "card": {
+                  "request_three_d_secure": "automatic"
+                }
+              },
+              "payment_method_types": [
+                "card",
+                "klarna",
+                "link"
+              ],
+              "payment_status": "paid",
+              "permissions": null,
+              "phone_number_collection": {
+                "enabled": false
+              },
+              "recovered_from": null,
+              "saved_payment_method_options": {
+                "allow_redisplay_filters": [
+                  "always"
+                ],
+                "payment_method_remove": "disabled",
+                "payment_method_save": null
+              },
+              "setup_intent": null,
+              "shipping_address_collection": null,
+              "shipping_cost": null,
+              "shipping_details": null,
+              "shipping_options": [],
+              "status": "complete",
+              "submit_type": null,
+              "subscription": "sub_1Sf14PI5lCx7Ne32tRmhzx7L",
+              "success_url": "https://preview--risteco-fatturazione.lovable.app/subscription?success=true",
+              "total_details": {
+                "amount_discount": 0,
+                "amount_shipping": 0,
+                "amount_tax": 0
+              },
+              "ui_mode": "hosted",
+              "url": null,
+              "wallet_options": null
+            }
+          },
+          "livemode": true,
+          "pending_webhooks": 3,
+          "request": {
+            "id": null,
+            "idempotency_key": null
+          },
+          "type": "checkout.session.completed"
+        }
+      }
+    ]
+  },
+  "versionId": "5354edb0-72df-4873-8d48-7da901460f48",
+  "activeVersionId": "5354edb0-72df-4873-8d48-7da901460f48",
+  "versionCounter": 70,
+  "triggerCount": 3,
+  "shared": [
+    {
+      "updatedAt": "2025-12-16T15:29:28.231Z",
+      "createdAt": "2025-12-16T15:29:28.231Z",
+      "role": "workflow:owner",
+      "workflowId": "16baWbRLcYQPqBFn",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-12-16T17:31:31.179Z",
+      "createdAt": "2025-12-16T17:31:31.179Z",
+      "id": "OjjkBNoaWPU9OMR1",
+      "name": "Risteco"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-16T18:57:23.000Z",
+    "createdAt": "2025-12-16T17:29:40.858Z",
+    "versionId": "5354edb0-72df-4873-8d48-7da901460f48",
+    "workflowId": "16baWbRLcYQPqBFn",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "profiles",
+          "returnAll": true,
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "trial_ends_at",
+                "condition": "lt",
+                "keyValue": "={{ $now }}"
+              },
+              {
+                "keyName": "subscription_end_at",
+                "condition": "lt",
+                "keyValue": "={{ $now }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          288,
+          -224
+        ],
+        "id": "ac450f66-6fca-4d1b-961e-eb5a75824d83",
+        "name": "Get many rows",
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "pagamenti",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          16,
+          -240
+        ],
+        "id": "120b8203-840b-4bd5-9df3-8185a84c76ce",
+        "name": "Webhook",
+        "webhookId": "91ad59c0-3e7a-493e-9f0b-458f4f4218fd"
+      },
+      {
+        "parameters": {
+          "events": [
+            "invoice.payment_failed",
+            "customer.subscription.deleted",
+            "order.payment_failed",
+            "payment_intent.payment_failed"
+          ]
+        },
+        "type": "n8n-nodes-base.stripeTrigger",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          32
+        ],
+        "id": "73044c1e-f61e-4743-ad08-4cdcd9995661",
+        "name": "Stripe Trigger",
+        "webhookId": "f1d2ebe9-0465-4938-9378-755ae2a88718",
+        "credentials": {
+          "stripeApi": {
+            "id": "RTCte8Klg0DvD6JB",
+            "name": "Stripe account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "98393291-dfd4-45ba-b095-10289d18e9b2",
+                "name": "email",
+                "value": "={{ $json.data.object.last_payment_error.payment_method.billing_details.email }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          176,
+          32
+        ],
+        "id": "118c0d46-f93c-4e83-afd6-24340ec51beb",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "events": [
+            "checkout.session.completed",
+            "customer.subscription.updated",
+            "invoice.payment_succeeded"
+          ]
+        },
+        "type": "n8n-nodes-base.stripeTrigger",
+        "typeVersion": 1,
+        "position": [
+          -128,
+          448
+        ],
+        "id": "43a4bcf0-a9f4-41d5-97c1-a33426539c7f",
+        "name": "Stripe Trigger1",
+        "webhookId": "23b63e14-9f61-4c0a-b82c-4e8041e3d1a0",
+        "credentials": {
+          "stripeApi": {
+            "id": "RTCte8Klg0DvD6JB",
+            "name": "Stripe account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "matchType": "allFilters",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "email",
+                "condition": "eq",
+                "keyValue": "={{ $('Stripe Trigger1').item.json.data.object.customer_details.email }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_enabled",
+                "fieldValue": "TRUE"
+              },
+              {
+                "fieldId": "subscription_end_at",
+                "fieldValue": "={{ $json.subscription_end_at }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          720,
+          352
+        ],
+        "id": "08990a37-f5cf-4f11-a2ae-e5ffa098d9bf",
+        "name": "Update a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Calcola timestamp tra un anno con ora completa\nconst now = new Date();\nconst oneYearLater = new Date(\n  now.getFullYear() + 1,\n  now.getMonth(),\n  now.getDate(),\n  now.getHours(),\n  now.getMinutes(),\n  now.getSeconds(),\n  now.getMilliseconds()\n);\n\n// Formato timestamp completo con timezone per Supabase\nreturn [\n  {\n    json: {\n      subscription_end_at: oneYearLater.toISOString(), // \"2026-12-16T17:21:00.000Z\"\n    },\n  },\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          304,
+          352
+        ],
+        "id": "1c809f29-abd5-49a9-b9b4-4559a2175808",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "d90e5ae2-cbc9-49eb-9535-11261fa64581",
+                "leftValue": "={{ $json.type }}",
+                "rightValue": "checkout.session.completed",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          64,
+          448
+        ],
+        "id": "fd217af3-c9e0-47af-b459-3d130fa7ca6a",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "email",
+                "condition": "eq",
+                "keyValue": "={{ $json.email }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "site_enabled",
+                "fieldValue": "FALSE"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          384,
+          32
+        ],
+        "id": "e31a8fe2-34a7-4edb-8d76-acaa46c1b0ec",
+        "name": "Update a row1",
+        "credentials": {
+          "supabaseApi": {
+            "id": "AjfV4ZtpT6LhN0WD",
+            "name": "Supabase Risteco"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          512,
+          352
+        ],
+        "id": "0b5bfbdf-3fbe-4dca-bfe8-2454653d776d",
+        "name": "Wait",
+        "webhookId": "ad9be2f1-1c49-42fb-8b43-882b415a9f59"
+      }
+    ],
+    "connections": {
+      "Get many rows": {
+        "main": [
+          []
+        ]
+      },
+      "Stripe Trigger": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Update a row1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Stripe Trigger1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update a row": {
+        "main": [
+          []
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Update a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "raffaele lugibello",
+    "name": "Version 5354edb0",
+    "description": ""
+  }
+}

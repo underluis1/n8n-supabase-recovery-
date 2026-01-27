@@ -1,0 +1,816 @@
+{
+  "updatedAt": "2024-06-19T23:59:15.000Z",
+  "createdAt": "2024-06-19T13:20:10.587Z",
+  "id": "Ys4Pxpjbul9y27L5",
+  "name": "AI RISTECO",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1480718-ba81-4f89-b13a-c76c0f0b8c4a",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "91211a22-a6aa-4f90-910d-eeddac45f41a",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        2280,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "categories",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "menu_id",
+              "condition": "eq",
+              "keyValue": "81"
+            }
+          ]
+        }
+      },
+      "id": "b3035afc-e709-4ed0-a717-2d8ee52c01a4",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        940,
+        520
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "DyF80fsCycRfvlb3",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "2a9327b8-64bb-42e7-a95e-0452e2b9b8a0",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Ci2ocbvw7JJ5myHs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c82eaa25-6541-403e-80f4-8bb645e93066",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "557b4f35-1934-4dfa-9257-c659e951cc63",
+              "name": "nomi categorie",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0f6f13e-f04c-436a-93e9-3434d8217fc4",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1440,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "product",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "menu_id",
+              "condition": "eq",
+              "keyValue": "81"
+            }
+          ]
+        }
+      },
+      "id": "4da63ac2-6356-4add-a0b2-194478236d02",
+      "name": "Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        940,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DyF80fsCycRfvlb3",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dc7badf0-66e3-4cc6-993b-a203594f0bfb",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d821c121-bebe-4cfc-a467-3fa20e112018",
+              "name": "nomi Piatti",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f8c6ced6-8df2-4809-931e-2d935330c7bb",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1440,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Chat Trigger').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=Sei progettato per rispondere alle tutte le domande del ristoratore e devi essere molto cordiale.\n\nse ti chiede di rispondere a domande sul suo menù utilizza questi dati: Categorie del menù:  {{ $json['nomi categorie'] }}.\n\nNomi piatti: {{ $json['nomi Piatti'] }}\nDevi sempre rispondere in maniera leggibile dall'uomo con un tono molto professionale  "
+        }
+      },
+      "id": "af3593a0-3460-4278-85f7-8eb227d36f6c",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.5,
+      "position": [
+        1920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "name": "create_a_row",
+        "workflowId": "0Jn8KOyhFdnZD4xQ",
+        "fields": {
+          "values": [
+            {},
+            {}
+          ]
+        }
+      },
+      "id": "e8b2a580-3171-48b6-b653-5e931891199e",
+      "name": "Custom n8n Workflow Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "87755ab8-039b-46da-a8c7-9994249d5b65",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1,
+      "position": [
+        580,
+        300
+      ],
+      "webhookId": "980bce08-146c-4341-9a80-e171c26f980d"
+    }
+  ],
+  "connections": {
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Custom n8n Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "554440ec-8267-49c9-a6a1-de74633cc9d0",
+  "activeVersionId": "554440ec-8267-49c9-a6a1-de74633cc9d0",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-06-19T13:20:10.596Z",
+      "createdAt": "2024-06-19T13:20:10.596Z",
+      "role": "workflow:owner",
+      "workflowId": "Ys4Pxpjbul9y27L5",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "554440ec-8267-49c9-a6a1-de74633cc9d0",
+    "workflowId": "Ys4Pxpjbul9y27L5",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1480718-ba81-4f89-b13a-c76c0f0b8c4a",
+                "name": "output",
+                "value": "={{ $json.output }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "91211a22-a6aa-4f90-910d-eeddac45f41a",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          2280,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "categories",
+          "returnAll": true,
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "menu_id",
+                "condition": "eq",
+                "keyValue": "81"
+              }
+            ]
+          }
+        },
+        "id": "b3035afc-e709-4ed0-a717-2d8ee52c01a4",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          940,
+          520
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "supabaseApi": {
+            "id": "DyF80fsCycRfvlb3",
+            "name": "Supabase account"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o",
+          "options": {}
+        },
+        "id": "2a9327b8-64bb-42e7-a95e-0452e2b9b8a0",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          1900,
+          520
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "Ci2ocbvw7JJ5myHs",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "name"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "c82eaa25-6541-403e-80f4-8bb645e93066",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1220,
+          520
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "557b4f35-1934-4dfa-9257-c659e951cc63",
+                "name": "nomi categorie",
+                "value": "={{ $json.name }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d0f6f13e-f04c-436a-93e9-3434d8217fc4",
+        "name": "Edit Fields2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          1440,
+          520
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "product",
+          "returnAll": true,
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "menu_id",
+                "condition": "eq",
+                "keyValue": "81"
+              }
+            ]
+          }
+        },
+        "id": "4da63ac2-6356-4add-a0b2-194478236d02",
+        "name": "Supabase1",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          940,
+          300
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "DyF80fsCycRfvlb3",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "name"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "dc7badf0-66e3-4cc6-993b-a203594f0bfb",
+        "name": "Aggregate1",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1220,
+          280
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d821c121-bebe-4cfc-a467-3fa20e112018",
+                "name": "nomi Piatti",
+                "value": "={{ $json.name }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "f8c6ced6-8df2-4809-931e-2d935330c7bb",
+        "name": "Edit Fields1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          1440,
+          280
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Chat Trigger').item.json.chatInput }}",
+          "options": {
+            "systemMessage": "=Sei progettato per rispondere alle tutte le domande del ristoratore e devi essere molto cordiale.\n\nse ti chiede di rispondere a domande sul suo menù utilizza questi dati: Categorie del menù:  {{ $json['nomi categorie'] }}.\n\nNomi piatti: {{ $json['nomi Piatti'] }}\nDevi sempre rispondere in maniera leggibile dall'uomo con un tono molto professionale  "
+          }
+        },
+        "id": "af3593a0-3460-4278-85f7-8eb227d36f6c",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.5,
+        "position": [
+          1920,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "name": "create_a_row",
+          "workflowId": "0Jn8KOyhFdnZD4xQ",
+          "fields": {
+            "values": [
+              {},
+              {}
+            ]
+          }
+        },
+        "id": "e8b2a580-3171-48b6-b653-5e931891199e",
+        "name": "Custom n8n Workflow Tool",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.1,
+        "position": [
+          2080,
+          540
+        ]
+      },
+      {
+        "parameters": {
+          "public": true,
+          "options": {
+            "responseMode": "lastNode"
+          }
+        },
+        "id": "87755ab8-039b-46da-a8c7-9994249d5b65",
+        "name": "Chat Trigger",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1,
+        "position": [
+          580,
+          300
+        ],
+        "webhookId": "980bce08-146c-4341-9a80-e171c26f980d"
+      }
+    ],
+    "connections": {
+      "Supabase": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase1": {
+        "main": [
+          [
+            {
+              "node": "Aggregate1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Custom n8n Workflow Tool": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Trigger": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Supabase1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

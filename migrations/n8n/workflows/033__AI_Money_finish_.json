@@ -1,0 +1,582 @@
+{
+  "updatedAt": "2024-11-03T23:21:18.000Z",
+  "createdAt": "2024-11-02T17:41:37.769Z",
+  "id": "HpWvOTTqz0IZyMBt",
+  "name": "✅AI Money finish✅",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "id": "f1d5ce30-08c6-445c-a22a-7d7194f3b102",
+      "name": "Telegram Trigger1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        140
+      ],
+      "webhookId": "8f66ab81-f9c9-420d-838c-9b5dc2186f4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "QLoNB3vhCZqe7kxS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "= {{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "3b1ee382-8274-4f9f-9657-6ecec66de988",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        140
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "QLoNB3vhCZqe7kxS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "194f86eb-5687-42de-8ff4-2d6796dd5cf9",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "money",
+        "returnAll": true
+      },
+      "id": "260ab792-5d8c-40ca-a0b7-057b4476723c",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        440
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DAj2UqfQGvKuvygI",
+          "name": "Supabase ai money"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "money",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $fromAI(\"name\") }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $fromAI(\"category\") }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "={{ $fromAI(\"type\") }}"
+            },
+            {
+              "fieldId": "price",
+              "fieldValue": "={{ $fromAI(\"price\") }}"
+            }
+          ]
+        }
+      },
+      "id": "7d2d65c9-3f96-4385-8666-dce66aaa82ec",
+      "name": "create spesa",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        440
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DAj2UqfQGvKuvygI",
+          "name": "Supabase ai money"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "id": "dd5bdfbe-dac4-4c48-8963-88a90f4eb966",
+      "name": "Zep",
+      "type": "@n8n/n8n-nodes-langchain.memoryZep",
+      "typeVersion": 1.2,
+      "position": [
+        940,
+        440
+      ],
+      "credentials": {
+        "zepApi": {
+          "id": "vmcGC48kot4eFrKJ",
+          "name": "Zep Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Sei un ai che permette all'utente di analizzare le sue spese quotidiane, il tuo compito è quello di aiutare l'utente a analizzare le sue spese.\n\nTutte le spese dell'utente sono su supabase con cui potrai interagire liberamente in lettura e scrittura. \n\nQuando l'utente ti chiede di inserire una nuova spesa o una nuova entrata devi sempre chiedergli:\n1. è un entrata o un uscita? Se è un entrata devi inserire \"type\": \"Entrata\". se è un uscita devi inserire \"type\": \"Uscita\".\n2. \"name\" il nome dell'entrata o dell'uscita.\n3. \"category\" la categoria dell'entrata o dell'uscita\n4.\"price\" il prezzo dell'entrata o dell'uscita che deve essere sempre con il punto ad esempio 3.15, ricordati che questo dato è un formato double e non striga quando lo inserisci a database, quindi non deve mai avere le virgolette\n\nquando hai queste informazioni inserisci questo record su supabase nella tabella money, ricordati che price è un numero e deve essere inserito senza virgolette.\n"
+        }
+      },
+      "id": "c76b5e12-21a5-4de9-8cab-74fecaf97222",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        900,
+        140
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create spesa": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zep": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Telegram Trigger1": [
+      {
+        "json": {
+          "update_id": 590499658,
+          "message": {
+            "message_id": 9,
+            "from": {
+              "id": 149239480,
+              "is_bot": false,
+              "first_name": "R",
+              "last_name": "L",
+              "username": "Underluis",
+              "language_code": "it"
+            },
+            "chat": {
+              "id": 149239480,
+              "first_name": "R",
+              "last_name": "L",
+              "username": "Underluis",
+              "type": "private"
+            },
+            "date": 1730573260,
+            "text": "ciao"
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "7a8b3594-02a0-4707-8f9b-f70027c6d753",
+  "activeVersionId": "7a8b3594-02a0-4707-8f9b-f70027c6d753",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-11-02T17:41:37.783Z",
+      "createdAt": "2024-11-02T17:41:37.783Z",
+      "role": "workflow:owner",
+      "workflowId": "HpWvOTTqz0IZyMBt",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "7a8b3594-02a0-4707-8f9b-f70027c6d753",
+    "workflowId": "HpWvOTTqz0IZyMBt",
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "*"
+          ],
+          "additionalFields": {}
+        },
+        "id": "f1d5ce30-08c6-445c-a22a-7d7194f3b102",
+        "name": "Telegram Trigger1",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          480,
+          140
+        ],
+        "webhookId": "8f66ab81-f9c9-420d-838c-9b5dc2186f4e",
+        "credentials": {
+          "telegramApi": {
+            "id": "QLoNB3vhCZqe7kxS",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+          "text": "= {{ $json.output }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "id": "3b1ee382-8274-4f9f-9657-6ecec66de988",
+        "name": "Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1280,
+          140
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "QLoNB3vhCZqe7kxS",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o-2024-08-06",
+          "options": {}
+        },
+        "id": "194f86eb-5687-42de-8ff4-2d6796dd5cf9",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          720,
+          440
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "igqCGsHg8vp0q97r",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "money",
+          "returnAll": true
+        },
+        "id": "260ab792-5d8c-40ca-a0b7-057b4476723c",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabaseTool",
+        "typeVersion": 1,
+        "position": [
+          1100,
+          440
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "DAj2UqfQGvKuvygI",
+            "name": "Supabase ai money"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "money",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "name",
+                "fieldValue": "={{ $fromAI(\"name\") }}"
+              },
+              {
+                "fieldId": "category",
+                "fieldValue": "={{ $fromAI(\"category\") }}"
+              },
+              {
+                "fieldId": "type",
+                "fieldValue": "={{ $fromAI(\"type\") }}"
+              },
+              {
+                "fieldId": "price",
+                "fieldValue": "={{ $fromAI(\"price\") }}"
+              }
+            ]
+          }
+        },
+        "id": "7d2d65c9-3f96-4385-8666-dce66aaa82ec",
+        "name": "create spesa",
+        "type": "n8n-nodes-base.supabaseTool",
+        "typeVersion": 1,
+        "position": [
+          1220,
+          440
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "DAj2UqfQGvKuvygI",
+            "name": "Supabase ai money"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $json.message.chat.id }}"
+        },
+        "id": "dd5bdfbe-dac4-4c48-8963-88a90f4eb966",
+        "name": "Zep",
+        "type": "@n8n/n8n-nodes-langchain.memoryZep",
+        "typeVersion": 1.2,
+        "position": [
+          940,
+          440
+        ],
+        "credentials": {
+          "zepApi": {
+            "id": "vmcGC48kot4eFrKJ",
+            "name": "Zep Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.message.text }}",
+          "options": {
+            "systemMessage": "Sei un ai che permette all'utente di analizzare le sue spese quotidiane, il tuo compito è quello di aiutare l'utente a analizzare le sue spese.\n\nTutte le spese dell'utente sono su supabase con cui potrai interagire liberamente in lettura e scrittura. \n\nQuando l'utente ti chiede di inserire una nuova spesa o una nuova entrata devi sempre chiedergli:\n1. è un entrata o un uscita? Se è un entrata devi inserire \"type\": \"Entrata\". se è un uscita devi inserire \"type\": \"Uscita\".\n2. \"name\" il nome dell'entrata o dell'uscita.\n3. \"category\" la categoria dell'entrata o dell'uscita\n4.\"price\" il prezzo dell'entrata o dell'uscita che deve essere sempre con il punto ad esempio 3.15, ricordati che questo dato è un formato double e non striga quando lo inserisci a database, quindi non deve mai avere le virgolette\n\nquando hai queste informazioni inserisci questo record su supabase nella tabella money, ricordati che price è un numero e deve essere inserito senza virgolette.\n"
+          }
+        },
+        "id": "c76b5e12-21a5-4de9-8cab-74fecaf97222",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.6,
+        "position": [
+          900,
+          140
+        ]
+      }
+    ],
+    "connections": {
+      "Telegram Trigger1": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create spesa": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Zep": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

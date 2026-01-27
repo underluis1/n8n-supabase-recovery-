@@ -1,0 +1,214 @@
+{
+  "updatedAt": "2025-11-17T10:54:00.000Z",
+  "createdAt": "2025-11-17T10:42:50.876Z",
+  "id": "JMhUVDHTyuQhsyIl",
+  "name": "RINNAI - GET DATA CALDAIA",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://web.rinnai.it/mainapi/api/serial/{{ $json.query.serial }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer PaXryNXtQuzabqcvvCUcIeJuR6X1VFlfoZIO3uO1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        96,
+        -16
+      ],
+      "id": "6a129b54-12b2-4ad8-9a9f-131af459b265",
+      "name": "get data caldaia"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get_data_caldaia",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "b278a9c0-9558-475c-b556-adf7446cf963",
+      "name": "Webhook",
+      "webhookId": "945db9ca-d886-4840-81e8-940bd1a0c10a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eLPHcGCtzV6skRoX",
+          "name": "ciaociao"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "get data caldaia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "bf7af8af-8dde-4e6b-a3fc-2c3bb2317c0e",
+  "activeVersionId": "bf7af8af-8dde-4e6b-a3fc-2c3bb2317c0e",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-17T10:42:50.882Z",
+      "createdAt": "2025-11-17T10:42:50.882Z",
+      "role": "workflow:owner",
+      "workflowId": "JMhUVDHTyuQhsyIl",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "bf7af8af-8dde-4e6b-a3fc-2c3bb2317c0e",
+    "workflowId": "JMhUVDHTyuQhsyIl",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://web.rinnai.it/mainapi/api/serial/{{ $json.query.serial }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer PaXryNXtQuzabqcvvCUcIeJuR6X1VFlfoZIO3uO1"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          96,
+          -16
+        ],
+        "id": "6a129b54-12b2-4ad8-9a9f-131af459b265",
+        "name": "get data caldaia"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get_data_caldaia",
+          "authentication": "headerAuth",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -112,
+          -16
+        ],
+        "id": "b278a9c0-9558-475c-b556-adf7446cf963",
+        "name": "Webhook",
+        "webhookId": "945db9ca-d886-4840-81e8-940bd1a0c10a",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "eLPHcGCtzV6skRoX",
+            "name": "ciaociao"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "get data caldaia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

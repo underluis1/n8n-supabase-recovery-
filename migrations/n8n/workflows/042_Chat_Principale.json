@@ -1,0 +1,400 @@
+{
+  "updatedAt": "2024-06-19T00:39:25.000Z",
+  "createdAt": "2024-06-18T19:25:58.119Z",
+  "id": "M9kX0pgCbmnxKHZu",
+  "name": "Chat Principale",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "70368f72-e41f-4fc3-be12-7c6ce7aa7bf3",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        800,
+        500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Ci2ocbvw7JJ5myHs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "38c70d8b-2a6b-4656-bb63-a35055456e84",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd666f23-ebac-4ce3-be6e-b3504a3dd1b2",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        1180,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Ciao, sono il tuo assistente",
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "3b9516b0-dfa0-4cd1-8e49-b7d842031bc4",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1,
+      "position": [
+        580,
+        280
+      ],
+      "webhookId": "e800ee8f-c9a2-4e60-9c61-58cf948f7a1d"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "={{ $json.chatInput }}"
+            },
+            {
+              "message": "Rispondi come se fossi un bambino di 5 anni parlando solo di giocattoli"
+            }
+          ]
+        }
+      },
+      "id": "dbe1f231-6d81-4158-829f-8f3c0d0aca0e",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        800,
+        280
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fbfaa2ec-7302-40be-960e-f25426048919",
+      "name": "Custom n8n Workflow Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d44b9516-5ee5-44b0-9937-ccc6f490b810",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.5,
+      "position": [
+        1080,
+        540
+      ]
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Custom n8n Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "bb12e2e9-fab5-453c-9d7a-38663bb45af3",
+  "activeVersionId": "bb12e2e9-fab5-453c-9d7a-38663bb45af3",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-06-18T19:25:58.132Z",
+      "createdAt": "2024-06-18T19:25:58.132Z",
+      "role": "workflow:owner",
+      "workflowId": "M9kX0pgCbmnxKHZu",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "bb12e2e9-fab5-453c-9d7a-38663bb45af3",
+    "workflowId": "M9kX0pgCbmnxKHZu",
+    "nodes": [
+      {
+        "parameters": {
+          "model": "gpt-4o",
+          "options": {}
+        },
+        "id": "70368f72-e41f-4fc3-be12-7c6ce7aa7bf3",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          800,
+          500
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "Ci2ocbvw7JJ5myHs",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "38c70d8b-2a6b-4656-bb63-a35055456e84",
+                "name": "text",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "cd666f23-ebac-4ce3-be6e-b3504a3dd1b2",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          1180,
+          280
+        ]
+      },
+      {
+        "parameters": {
+          "public": true,
+          "initialMessages": "Ciao, sono il tuo assistente",
+          "options": {
+            "responseMode": "lastNode"
+          }
+        },
+        "id": "3b9516b0-dfa0-4cd1-8e49-b7d842031bc4",
+        "name": "Chat Trigger",
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1,
+        "position": [
+          580,
+          280
+        ],
+        "webhookId": "e800ee8f-c9a2-4e60-9c61-58cf948f7a1d"
+      },
+      {
+        "parameters": {
+          "messages": {
+            "messageValues": [
+              {
+                "type": "HumanMessagePromptTemplate",
+                "message": "={{ $json.chatInput }}"
+              },
+              {
+                "message": "Rispondi come se fossi un bambino di 5 anni parlando solo di giocattoli"
+              }
+            ]
+          }
+        },
+        "id": "dbe1f231-6d81-4158-829f-8f3c0d0aca0e",
+        "name": "Basic LLM Chain",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.4,
+        "position": [
+          800,
+          280
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "fbfaa2ec-7302-40be-960e-f25426048919",
+        "name": "Custom n8n Workflow Tool",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 1.1,
+        "position": [
+          1320,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "d44b9516-5ee5-44b0-9937-ccc6f490b810",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.5,
+        "position": [
+          1080,
+          540
+        ]
+      }
+    ],
+    "connections": {
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Trigger": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Custom n8n Workflow Tool": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

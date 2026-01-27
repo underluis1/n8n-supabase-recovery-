@@ -1,0 +1,353 @@
+{
+  "updatedAt": "2024-07-04T09:48:10.000Z",
+  "createdAt": "2024-07-04T09:36:37.348Z",
+  "id": "kohCAD3wKQvuFZ6s",
+  "name": "My workflow 7",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "categories",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "menu_id",
+              "keyValue": "={{ $json.body.id }}"
+            }
+          ]
+        }
+      },
+      "id": "9e552d60-cf9e-4623-831b-4e46e2bb4ef8",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        800,
+        280
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DyF80fsCycRfvlb3",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "50b2953b-e61e-417a-a351-457ccded801a",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "10d5e1ef-e30d-4b79-9420-05b45a02805a",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a80fcd4e-aead-4cab-a647-b56fe2b61679",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "78133294-374c-4c4d-bbd5-7bcc8703b9ef",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        580,
+        280
+      ],
+      "webhookId": "a80fcd4e-aead-4cab-a647-b56fe2b61679"
+    }
+  ],
+  "connections": {
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.raffaelelugibello.it",
+            "user-agent": "Vercel Edge Functions",
+            "content-length": "11",
+            "accept-encoding": "gzip",
+            "cdn-loop": "cloudflare; subreqs=1",
+            "cf-connecting-ip": "2a06:98c0:3600::103",
+            "cf-ew-via": "15",
+            "cf-ray": "89de30c5130d9b3f-FRA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "cloudflare-workers.vercel-infra-production.com",
+            "content-type": "application/json",
+            "x-api-key": "694a0a389b7992b51b2c61da84236128",
+            "x-forwarded-for": "162.158.86.90",
+            "x-forwarded-host": "n8n.raffaelelugibello.it",
+            "x-forwarded-proto": "https",
+            "x-middleware-subrequest": "905f6b138cb8c436a235a4d1fff78284c581245f",
+            "x-vercel-id": "fra1::glbpj-1720086402615-b4acaab51898"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id": "87"
+          },
+          "webhookUrl": "https://n8n.raffaelelugibello.it/webhook-test/a80fcd4e-aead-4cab-a647-b56fe2b61679",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "5813253a-26b7-471a-9425-41c166d8198d",
+  "activeVersionId": "5813253a-26b7-471a-9425-41c166d8198d",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-07-04T09:36:37.353Z",
+      "createdAt": "2024-07-04T09:36:37.353Z",
+      "role": "workflow:owner",
+      "workflowId": "kohCAD3wKQvuFZ6s",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "5813253a-26b7-471a-9425-41c166d8198d",
+    "workflowId": "kohCAD3wKQvuFZ6s",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "get",
+          "tableId": "categories",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "menu_id",
+                "keyValue": "={{ $json.body.id }}"
+              }
+            ]
+          }
+        },
+        "id": "9e552d60-cf9e-4623-831b-4e46e2bb4ef8",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          800,
+          280
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "DyF80fsCycRfvlb3",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+                "fieldToAggregate": "name"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "50b2953b-e61e-417a-a351-457ccded801a",
+        "name": "Aggregate",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1020,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "id": "10d5e1ef-e30d-4b79-9420-05b45a02805a",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1240,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "a80fcd4e-aead-4cab-a647-b56fe2b61679",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "78133294-374c-4c4d-bbd5-7bcc8703b9ef",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          580,
+          280
+        ],
+        "webhookId": "a80fcd4e-aead-4cab-a647-b56fe2b61679"
+      }
+    ],
+    "connections": {
+      "Supabase": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

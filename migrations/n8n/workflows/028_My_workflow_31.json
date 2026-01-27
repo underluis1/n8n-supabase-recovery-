@@ -1,0 +1,408 @@
+{
+  "updatedAt": "2025-10-24T15:16:14.000Z",
+  "createdAt": "2025-10-24T15:05:57.287Z",
+  "id": "DEqCJaUk7wBBpfM8",
+  "name": "My workflow 31",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "link",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "link"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cc80358d-8ac2-4ca8-92ff-b606f15eba0b",
+      "name": "On form submission",
+      "webhookId": "9dc49678-56f3-4e4d-9262-a27f28592f96"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "b6f08777-b1ea-4167-b215-550478fb2ed6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Title",
+              "description": "Il titolo del video",
+              "required": true
+            },
+            {
+              "name": "Img",
+              "description": "immagine di copertina del video",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "dc22d29b-de7f-4c94-8331-ed6266dd2370",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen-2.5-coder-32b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        460,
+        240
+      ],
+      "id": "fa4eaf7b-2f54-4a9f-9923-737d059e294b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "DIaCgMCJChhjSXPT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9f9f33f9-e2ca-4832-ac6d-bb460acc1872",
+              "name": "data",
+              "value": "={{ $json.data.substring(0,120000) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "d6070ce9-f8e5-461e-99f7-71e2ab3ac025",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "link": "https://www.youtube.com/watch?v=RGoQCy2BlMw",
+          "submittedAt": "2025-10-24T17:06:10.302+02:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "72bf60bc-3f3d-4614-9b8d-d1c77a3b7f4e",
+  "activeVersionId": "72bf60bc-3f3d-4614-9b8d-d1c77a3b7f4e",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-10-24T15:05:57.293Z",
+      "createdAt": "2025-10-24T15:05:57.293Z",
+      "role": "workflow:owner",
+      "workflowId": "DEqCJaUk7wBBpfM8",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "72bf60bc-3f3d-4614-9b8d-d1c77a3b7f4e",
+    "workflowId": "DEqCJaUk7wBBpfM8",
+    "nodes": [
+      {
+        "parameters": {
+          "formTitle": "link",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "link"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "cc80358d-8ac2-4ca8-92ff-b606f15eba0b",
+        "name": "On form submission",
+        "webhookId": "9dc49678-56f3-4e4d-9262-a27f28592f96"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.link }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          220,
+          0
+        ],
+        "id": "b6f08777-b1ea-4167-b215-550478fb2ed6",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "text": "={{ $json.data }}",
+          "attributes": {
+            "attributes": [
+              {
+                "name": "Title",
+                "description": "Il titolo del video",
+                "required": true
+              },
+              {
+                "name": "Img",
+                "description": "immagine di copertina del video",
+                "required": true
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+        "typeVersion": 1.2,
+        "position": [
+          660,
+          0
+        ],
+        "id": "dc22d29b-de7f-4c94-8331-ed6266dd2370",
+        "name": "Information Extractor"
+      },
+      {
+        "parameters": {
+          "model": "qwen/qwen-2.5-coder-32b-instruct",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          460,
+          240
+        ],
+        "id": "fa4eaf7b-2f54-4a9f-9923-737d059e294b",
+        "name": "OpenRouter Chat Model",
+        "credentials": {
+          "openRouterApi": {
+            "id": "DIaCgMCJChhjSXPT",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "9f9f33f9-e2ca-4832-ac6d-bb460acc1872",
+                "name": "data",
+                "value": "={{ $json.data.substring(0,120000) }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          440,
+          0
+        ],
+        "id": "d6070ce9-f8e5-461e-99f7-71e2ab3ac025",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "On form submission": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Information Extractor",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Information Extractor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

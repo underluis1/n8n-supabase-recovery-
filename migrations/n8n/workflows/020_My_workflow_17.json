@@ -1,0 +1,250 @@
+{
+  "updatedAt": "2024-11-19T01:17:15.000Z",
+  "createdAt": "2024-11-17T23:59:32.053Z",
+  "id": "ANNcNxDu1PHTzBhw",
+  "name": "My workflow 17",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e1d69dc-81bd-4786-8360-2257a647f768",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "85bea0c0-7900-40e5-89d2-591c8bbe57f4",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65df1b5d-4152-45b9-b9f4-e4ffdd32d9fa",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        780,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "d1595c16-e4b9-4b31-999b-47b8249f621f",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        980,
+        480
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "khbb",
+        "description": "non chiamare mai questo tool",
+        "workflowId": {
+          "__rl": true,
+          "value": "QaBdZXLp70kekKIA",
+          "mode": "list",
+          "cachedResultName": "My workflow 16"
+        }
+      },
+      "id": "78afc606-f423-4de8-87eb-e061a3a15af6",
+      "name": "Call n8n Workflow Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1340,
+        480
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c568aaad-831b-4961-85c9-375b5534ec0c",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "cfbf217b-1958-4968-b9a8-fa34fb23635d",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        580,
+        280
+      ],
+      "webhookId": "4e343ec9-b214-47d8-9282-78798fa17fde"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Sei un assistente AI di organizzazione personale. Il tuo obiettivo è pianificare la giornata dell'utente in modo completo, dettagliato e su misura, partendo dai suoi impegni quotidiani e dagli obiettivi personali. Non sei ripetitivo se non per gli impegni fissi, e riesci a creare una lista di task equilibrata e varia.\n\nObiettivi e impegni dell’utente:\nLavoro: 8 ore al giorno.\nApprendimento: desidera imparare JavaScript.\nAttività fisica: vuole allenarsi 3 volte a settimana.\nSocialità: vuole uscire con amici quasi ogni sera.\nCrescita personale: vuole diventare una persona migliore.\nCosa devi fare:\nCrea una pianificazione giornaliera che distribuisca in modo equilibrato i task fondamentali e secondari.\nAggiungi task dettagliati e vari in ogni momento della giornata, per stimolare sia produttività sia benessere generale. Ad esempio, include azioni pratiche come \"rifarsi il letto\" o \"fare una passeggiata di 10 minuti\".\nAdatta le task in modo creativo ogni giorno per evitare ripetizioni e monotonia, mantenendo al contempo alcuni compiti costanti.\nIncludi task che riflettano gli obiettivi a lungo termine come diventare una persona migliore, apprendere JavaScript e fare esercizio fisico.\nSuggerisci attività sociali o rilassanti per la sera, come uscire con gli amici o fare attività che favoriscano la crescita personale.\nLinea guida per il formato:\nSchematizza l’intera giornata con una lista dettagliata e ordinata di task, suddividendoli per fascia oraria (mattina, pomeriggio, sera).\nInserisci descrizioni brevi e motivazionali per ogni task, con suggerimenti pratici e realistici.\nFornisci promemoria e piccoli suggerimenti per migliorare la gestione del tempo e mantenere alta la motivazione."
+        }
+      },
+      "id": "252f4745-f6e7-46e3-a47d-29efcac957ec",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1000,
+        280
+      ]
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call n8n Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e605c15a-a0da-47fb-9c67-d6e59843d8cd",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2024-11-17T23:59:32.066Z",
+      "createdAt": "2024-11-17T23:59:32.066Z",
+      "role": "workflow:owner",
+      "workflowId": "ANNcNxDu1PHTzBhw",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,1753 @@
+{
+  "updatedAt": "2025-12-20T16:44:36.896Z",
+  "createdAt": "2025-12-19T17:46:07.480Z",
+  "id": "L4pPnozuubUVFp5H",
+  "name": "Risteco - Get Business Info V3 Botpress",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "id": "cc64dff8-1c41-4012-ac3f-705875e91e45",
+      "name": "AWS Rekognition",
+      "type": "n8n-nodes-base.awsRekognition",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -320
+      ],
+      "credentials": {
+        "aws": {
+          "id": "Nnb9KM5sqH23EIgx",
+          "name": "AWS (IAM) account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "imageUrls",
+        "options": {}
+      },
+      "id": "ab131b40-3a02-4e40-97c9-6194a3438308",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b037f82b-f41a-482c-9639-e414f89dcac8",
+              "name": "id",
+              "value": "={{ $('Business Info').item.json.placeId }}",
+              "type": "string"
+            },
+            {
+              "id": "1e1fdcfc-1933-4e97-a360-918c09c0f45b",
+              "name": "displayName",
+              "value": "={{ $('Business Info').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "352b35d8-939c-43de-bbd5-4f65c4d7fb5a",
+              "name": "address",
+              "value": "={{ $('Business Info').item.json.address }}",
+              "type": "string"
+            },
+            {
+              "id": "b366441c-adbe-4b5d-ab6f-da9ae550bb69",
+              "name": "currentOpeningHours",
+              "value": "={{ $json.currentOpeningHours.weekdayDescriptions.join(\"\\n\") }}",
+              "type": "string"
+            },
+            {
+              "id": "b940973b-e020-4fc9-a85b-fd760706d2f7",
+              "name": "totalScore",
+              "value": "={{ $('Business Info').item.json.totalScore }}",
+              "type": "number"
+            },
+            {
+              "id": "80d2bdda-7e92-4869-ab61-2707b0032d5b",
+              "name": "reviewsCount",
+              "value": "={{ $('Business Info').item.json.reviewsCount }}",
+              "type": "number"
+            },
+            {
+              "id": "d13492bc-61a2-4f47-8451-6560f3e0c7b0",
+              "name": "phone",
+              "value": "={{ $('Business Info').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "f03521f0-71ac-4dd1-b1f0-c91cc3a27bc2",
+              "name": "phoneUnformatted",
+              "value": "={{ $('Business Info').item.json.phoneUnformatted }}",
+              "type": "string"
+            },
+            {
+              "id": "763f2b64-f2bb-4285-9fec-a69ccb467664",
+              "name": "description",
+              "value": "={{ $('Business Info').item.json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "5691c691-6c48-4f64-9c9f-c8a02933f7c3",
+              "name": "price",
+              "value": "={{ $('Business Info').item.json.price }}",
+              "type": "string"
+            },
+            {
+              "id": "1c210b61-a004-4a70-b501-7f4947d829e2",
+              "name": "categoryName",
+              "value": "={{ $('Business Info').item.json.categoryName }}",
+              "type": "string"
+            },
+            {
+              "id": "e218b2a0-de2b-4528-9678-e301451dec2f",
+              "name": "url",
+              "value": "={{ $('Business Info').item.json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "60ab174f-b667-4cf6-abe2-037a61edf2f7",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        256,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "reviews",
+        "options": {}
+      },
+      "id": "faa3a64f-bf67-414a-81e1-071cb9914220",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        32,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "7f992fa1-1532-41f4-bda7-dbdcdbf94d8a",
+              "leftValue": "={{ $json.stars }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1b044773-8e53-4b58-98a8-7c0f36985b44",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        256,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "reviews",
+        "include": "specifiedFields",
+        "fieldsToInclude": "reviewId,name,text,stars,publishAt,publishedAtDate,reviewUrl,reviewerId,reviewerUrl,reviewerPhotoUrl,reviewerNumberOfReviews,isLocalGuide,reviewImageUrls",
+        "options": {}
+      },
+      "id": "8fa623b4-7159-485c-bee4-440c5f3cbc54",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        480,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const photos = [];\n$('AWS Rekognition').all().forEach((item, index) => {\n  if (item.json.FaceDetails.length === 0) {\n    photos.push($('Get Image').all()[index])\n  }\n})\n\nreturn photos;"
+      },
+      "id": "13e493a6-665f-4843-9422-c393ef7c8ae6",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields3').item.json.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "reviews",
+              "fieldValue": "={{ $json.reviews }}"
+            }
+          ]
+        }
+      },
+      "id": "fe31cb32-c993-47cd-a03e-cc35978cec08",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        704,
+        48
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "UYWQNHlS1XbbECZM",
+          "name": "Task - ffy - articles | ifluisunder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields3').item.json.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "business_name",
+              "fieldValue": "={{ $json.displayName }}"
+            },
+            {
+              "fieldId": "website",
+              "fieldValue": "={{ $json.url }}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{ $json.address }}"
+            },
+            {
+              "fieldId": "opening",
+              "fieldValue": "={{ $json.currentOpeningHours }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $json.phoneUnformatted }}"
+            },
+            {
+              "fieldId": "place_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "bio",
+              "fieldValue": "={{ $json.description }}"
+            }
+          ]
+        }
+      },
+      "id": "f1ab2787-c819-493e-b8d6-084329522c75",
+      "name": "Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        480,
+        208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "UYWQNHlS1XbbECZM",
+          "name": "Task - ffy - articles | ifluisunder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields3').item.json.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "pics",
+              "fieldValue": "={{ $json.data.map(item => item.url ) }}"
+            }
+          ]
+        }
+      },
+      "id": "ba2e14b0-c351-4b24-9bcd-f3b46dd74ff8",
+      "name": "Supabase2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        -144
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "UYWQNHlS1XbbECZM",
+          "name": "Task - ffy - articles | ifluisunder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd71ba78-fb53-4643-9ff3-863aeb18ed54",
+              "name": "url",
+              "value": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/public/{{ $json.Key }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d5d41e96-e1cb-4957-96f6-c2ea10b6f7e3",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        2304,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "89fc6483-fe06-41b3-b7a8-9e5a5e1d9af7",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1000,
+        "height": 1000,
+        "options": {
+          "format": "jpeg"
+        }
+      },
+      "id": "3be45069-0b4b-4b8f-8174-68bd2c279f16",
+      "name": "Edit Image",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1000,
+        "height": 1000,
+        "options": {
+          "format": "webp"
+        }
+      },
+      "id": "a9becc8f-5ab7-4901-9827-6d8c93d85809",
+      "name": "Edit Image1",
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "memory",
+              "value": "512"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"deeperCityScrape\": false,\n    \"includeWebResults\": false,\n    \"language\": \"it\",\n    \"maxCrawledPlacesPerSearch\": 1,\n    \"maxImages\": 15,\n    \"maxQuestions\": 0,\n    \"maxReviews\": 15,\n    \"onlyDataFromSearchPage\": false,\n    \"reviewsSort\": \"highestRanking\",\n    \"reviewsStartDate\": \"{{ $now.minus(12, \"months\").format(\"yyyy-MM-dd\") }}\",\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapeResponseFromOwnerText\": true,\n    \"scrapeReviewId\": true,\n    \"scrapeReviewUrl\": true,\n    \"scrapeReviewerId\": true,\n    \"scrapeReviewerName\": true,\n    \"scrapeReviewerUrl\": true,\n    \"skipClosedPlaces\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.url }}\"\n        }\n    ]\n}",
+        "options": {}
+      },
+      "id": "3d89ebdb-d442-4a3d-ba79-62ca65976da9",
+      "name": "Business Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -304,
+        208
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "i61VzWLSuhC6pS8U",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://places.googleapis.com/v1/places/{{ $json.placeId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "languageCode",
+              "value": "it"
+            },
+            {
+              "name": "regionCode",
+              "value": "IT"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "currentOpeningHours"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65aa9cd9-c3f8-4ecb-81b8-6e1e4fd9d0a5",
+      "name": "Opening Hours",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.imageUrls }}",
+        "options": {}
+      },
+      "id": "6839852d-e909-4a3d-990f-4d99eb261f5d",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://nmwxdizjqydyzryydbnk.supabase.co/storage/v1/object/business_photos/{{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "={{ $binary.data.fileName.split(\".\")[0].concat(`-${$now.toMillis()}`) }}",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "f561eb02-2326-4953-b113-e851752c7159",
+      "name": "Upload Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2112,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "570972d5-8ac5-4505-9be5-9c1a5d198ba0",
+              "name": "conversation_id",
+              "value": "={{ $('Webhook').item.json.body.conversation.id }}",
+              "type": "string"
+            },
+            {
+              "id": "03144b48-b5bd-4f14-b39e-0e1b7d0d2dc3",
+              "name": "data",
+              "value": "={{ $('Webhook').item.json.body.data }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d65f32d6-81e9-4071-8438-dbafe1c467b1",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -1680,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "reference_phone",
+              "keyValue": "={{ $json.data.phone }}"
+            },
+            {
+              "keyName": "place_id",
+              "keyValue": "={{ $json.data.place_link.split(\":\")[2] }}"
+            }
+          ]
+        }
+      },
+      "id": "ee5d7494-0416-4141-bc56-e36b1048d978",
+      "name": "Supabase3",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        320
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1ff4fcbf-14cb-4b54-8595-2814fe261be1",
+              "leftValue": "={{ $('Supabase3').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4bd1b7b8-2850-415a-9437-79de375646bd",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1216,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://nmwxdizjqydyzryydbnk.supabase.co/auth/v1/otp",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"+{{ $('Edit Fields2').item.json.data.phone }}\"\n}",
+        "options": {}
+      },
+      "id": "1e297d99-f4f4-4d37-bc26-3af0eebd0682",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1008,
+        208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "AjfV4ZtpT6LhN0WD",
+          "name": "Supabase Risteco"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "reference_phone",
+              "keyValue": "={{ $('Edit Fields2').item.json.data.phone }}"
+            }
+          ]
+        }
+      },
+      "id": "4b58be20-024b-4594-b48d-14dae9d3517d",
+      "name": "Supabase4",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        208
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "UYWQNHlS1XbbECZM",
+          "name": "Task - ffy - articles | ifluisunder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9b2a6fc7-ab41-4f52-b886-f3e475fb3ab1",
+              "name": "url",
+              "value": "={{ $('Edit Fields2').item.json.data.place_link }}",
+              "type": "string"
+            },
+            {
+              "id": "c560f634-74e9-40a2-ab82-35edd5455126",
+              "name": "profiles_id",
+              "value": "={{ $('Supabase4').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6340c8e3-36a2-4f5a-93fd-602eb096347c",
+              "name": "phone",
+              "value": "={{ $('Edit Fields2').item.json.data.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "485467a0-b878-483f-af66-48ae0afe41e5",
+              "name": "conversation_id",
+              "value": "={{ $('Edit Fields2').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "70617eb8-bc0b-4f3d-a2ef-462282475159",
+              "name": "first_name",
+              "value": "={{ $('Edit Fields2').item.json.data.first_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "db30a9cf-92ca-462b-afa7-e5750564f5df",
+      "name": "Edit Fields3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -560,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "f62715e6-916b-4d1d-aaf9-8471fcd5ff6b",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        2912,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "7da39f02-e1d0-4c4a-9bb5-b4701d3cdb37",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        3152,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.botpress.cloud/e6b01d07-8602-452b-9fff-3fe89ae7c808",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"conversation\": { \"id\": \"{{ $('Edit Fields3').item.json.conversation_id }}\" }, \"data\": { \"risteco_url\": \"{{ $json.risteco_url }}\" } }",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "58665db8-cd23-4b18-aa0f-a24e593a8ddb",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4256,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "typeName": "Business",
+        "properties": {
+          "property": [
+            {
+              "key": "business_name",
+              "value": "={{ $('Business Info').item.json.title }}"
+            },
+            {
+              "key": "supabase_id",
+              "value": "={{ $('Edit Fields3').item.json.profiles_id }}"
+            }
+          ]
+        }
+      },
+      "id": "988350b2-3921-4d3e-81bc-c5c82e0aa2b2",
+      "name": "Bubble",
+      "type": "n8n-nodes-base.bubble",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a82c1da2-c626-4a40-b46c-7d459b9d755d",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3584,
+        400
+      ],
+      "webhookId": "3a8df7f5-4756-4dce-bf61-aab6da2cd515"
+    },
+    {
+      "parameters": {
+        "typeName": "Business",
+        "objectId": "={{ $json.id }}"
+      },
+      "id": "98815a98-d0d0-4e12-9abc-6f5fa7ad9ed7",
+      "name": "Bubble1",
+      "type": "n8n-nodes-base.bubble",
+      "typeVersion": 1,
+      "position": [
+        3808,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields3').item.json.profiles_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "risteco_url",
+              "fieldValue": "=https://risteco.app/business/{{ $json.Slug }}"
+            },
+            {
+              "fieldId": "onboarding_complete",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $('Edit Fields3').item.json.first_name }}"
+            }
+          ]
+        }
+      },
+      "id": "cb6bbd19-ff68-4919-8724-79f85e71262a",
+      "name": "Supabase5",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4032,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "UYWQNHlS1XbbECZM",
+          "name": "Task - ffy - articles | ifluisunder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.botpress.cloud/8b6a68ac-0171-4889-a7b6-5b7b41a40d42",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"conversation\": { \"id\": \"{{ $('Edit Fields3').item.json.conversation_id }}\" }, \"data\": { \"risteco_url\": \"{{ $('Supabase5').item.json.risteco_url }}\" } }",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "c84f226d-ade8-480b-88fa-4ffcb24eca97",
+      "name": "HTTP Request2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4448,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "ca98c60a-fe70-4ee6-a570-fa6b88b28807",
+              "leftValue": "={{ $json.imageUrls }}",
+              "rightValue": "https://lh5",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7c2d38b1-18c5-4c27-a97c-ef1e7b2f7111",
+      "name": "Filter1",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"executionId\": {{ $execution.id }}\n}",
+        "options": {}
+      },
+      "id": "cbbd16be-8e97-4c14-b1fb-b13ff1e73970",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1920,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b31d9b23-1f84-49ca-9624-acc8b70d7282",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8133e2d1-8aa5-4dcc-9d78-f03b732ec72e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        320
+      ],
+      "webhookId": "a54538a8-ab0b-44f5-8216-1cce1c61402a"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.imageUrls }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        -144
+      ],
+      "id": "1d729682-ed59-4b8a-85bf-b82cc9346b6d",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Converti binary in base64 per Rekognition\nconst binaryData = await this.helpers.getBinaryDataBuffer(0, 'data');\nconst base64Image = binaryData.toString('base64');\n\nreturn {\n  json: {\n    imageBase64: base64Image,\n    imageUrls: $input.item.json.imageUrls\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        -144
+      ],
+      "id": "60b0f53d-20a2-4d10-9949-7e4e8f668335",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://rekognition.us-east-1.amazonaws.com/",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "aws",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Amz-Target",
+              "value": "RekognitionService.DetectFaces"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-amz-json-1.1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"Image\": {\n    \"Bytes\": \"{{ $json.imageBase64 }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1488,
+        -144
+      ],
+      "id": "618a7fd0-3e94-40aa-a5cd-74b617bebb7e",
+      "name": "HTTP Request4",
+      "credentials": {
+        "aws": {
+          "id": "Nnb9KM5sqH23EIgx",
+          "name": "AWS (IAM) account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryData": true,
+        "binaryPropertyName": "={{ $('Edit Image').item.binary.data }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsRekognition",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -304
+      ],
+      "id": "3d02f911-3785-4cec-ac7e-ea871f35aa5a",
+      "name": "Analyze image",
+      "credentials": {
+        "aws": {
+          "id": "Nnb9KM5sqH23EIgx",
+          "name": "AWS (IAM) account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS Rekognition": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Supabase2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image1": {
+      "main": [
+        [
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business Info": {
+      "main": [
+        [
+          {
+            "node": "Opening Hours",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opening Hours": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Supabase3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase3": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Supabase4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        []
+      ]
+    },
+    "Supabase2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Bubble",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bubble": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Bubble1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bubble1": {
+      "main": [
+        [
+          {
+            "node": "Supabase5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Edit Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Business Info": [
+      {
+        "json": {
+          "searchString": "Direct Detail URL: https://www.google.com/maps/place/Agriturismo+Ristorante+Il+Grillo+Parlante/@44.3889444,11.322331199999999,14z/data=!4m8!1m2!2m1!1sAgriturismo+Ristorante+Il+Grillo+Parlante!3m4!1s0x132ad5a37df69cb3:0xb35f0db8117c6427!8m2!3d44.3889444!4d11.322331199999999",
+          "rank": null,
+          "searchPageUrl": null,
+          "searchPageLoadedUrl": null,
+          "isAdvertisement": false,
+          "title": "Agriturismo Ristorante Il Grillo Parlante",
+          "subTitle": null,
+          "description": null,
+          "price": null,
+          "categoryName": "Agriturismo",
+          "address": "Via del Sasso, 17, 40065 Pianoro BO, Italia",
+          "neighborhood": null,
+          "street": "Via del Sasso, 17",
+          "city": "Pianoro",
+          "postalCode": "40065",
+          "state": "Città Metropolitana di Bologna",
+          "countryCode": "IT",
+          "website": "https://agriturismoilgrilloparlante.it/",
+          "phone": "+39 051 469 0161",
+          "phoneUnformatted": "+390514690161",
+          "claimThisBusiness": false,
+          "location": {
+            "lat": 44.3889444,
+            "lng": 11.3223312
+          },
+          "locatedIn": null,
+          "plusCode": "98QC+HW Pianoro, Città Metropolitana di Bologna, Italia",
+          "menu": null,
+          "totalScore": 4.4,
+          "permanentlyClosed": false,
+          "temporarilyClosed": false,
+          "placeId": "ChIJs5z2faPVKhMRJ2R8EbgNX7M",
+          "categories": [
+            "Agriturismo"
+          ],
+          "fid": "0x132ad5a37df69cb3:0xb35f0db8117c6427",
+          "cid": "12925064539795121191",
+          "reviewsCount": 88,
+          "reviewsDistribution": {
+            "oneStar": 2,
+            "twoStar": 1,
+            "threeStar": 7,
+            "fourStar": 25,
+            "fiveStar": 53
+          },
+          "imagesCount": 79,
+          "imageCategories": [
+            "Tutte",
+            "Camere",
+            "Esterni",
+            "Cibi e bevande",
+            "Alimento",
+            "Dai visitatori",
+            "Street View e foto sferiche"
+          ],
+          "scrapedAt": "2024-07-27T16:03:50.672Z",
+          "reserveTableUrl": null,
+          "googleFoodUrl": null,
+          "hotelStars": null,
+          "hotelDescription": null,
+          "checkInDate": null,
+          "checkOutDate": null,
+          "similarHotelsNearby": null,
+          "hotelReviewSummary": null,
+          "hotelAds": [],
+          "openingHours": [],
+          "peopleAlsoSearch": [
+            {
+              "category": "Ricerche correlate",
+              "title": "Ristorante Le Ginestre",
+              "reviewsCount": 278,
+              "totalScore": 4.3
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Relais Il Poggiolo Bio Agriturismo Olistico",
+              "reviewsCount": 18,
+              "totalScore": 4.3
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Agriturismo Tagliavento",
+              "reviewsCount": 97,
+              "totalScore": 4.6
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Trattoria Grillini",
+              "reviewsCount": 812,
+              "totalScore": 4.5
+            },
+            {
+              "category": "Ricerche correlate",
+              "title": "Agriturismo I Calanchi di Riosto",
+              "reviewsCount": 16,
+              "totalScore": 4.3
+            }
+          ],
+          "placesTags": [],
+          "reviewsTags": [
+            {
+              "title": "prezzi",
+              "count": 11
+            },
+            {
+              "title": "vini",
+              "count": 7
+            },
+            {
+              "title": "i bambini",
+              "count": 6
+            },
+            {
+              "title": "cucina",
+              "count": 5
+            },
+            {
+              "title": "colline",
+              "count": 5
+            },
+            {
+              "title": "crescentine",
+              "count": 4
+            },
+            {
+              "title": "carne",
+              "count": 4
+            },
+            {
+              "title": "cordiale",
+              "count": 4
+            },
+            {
+              "title": "antipasto",
+              "count": 4
+            },
+            {
+              "title": "cibo locale",
+              "count": 2
+            }
+          ],
+          "additionalInfo": {},
+          "gasPrices": [],
+          "questionsAndAnswers": [],
+          "updatesFromCustomers": {
+            "postDate": "un anno fa",
+            "postedBy": {
+              "totalReviews": null
+            },
+            "media": []
+          },
+          "url": "https://www.google.com/maps/search/?api=1&query=Agriturismo%20Ristorante%20Il%20Grillo%20Parlante&query_place_id=ChIJs5z2faPVKhMRJ2R8EbgNX7M",
+          "webResults": [],
+          "parentPlaceUrl": null,
+          "tableReservationLinks": [],
+          "orderBy": [],
+          "images": null,
+          "imageUrls": [
+            "https://lh5.googleusercontent.com/p/AF1QipN_wBuK4BWOgHw3bpQhSUYu410f5ckxN9ibv_pt=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipMCjzonw1NImbln0pOw8uzjAAyicg0UULvdqulc=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipPzkIz7EbTlZoIjH1Yp_99ffZ43nAiypnLpupOq=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipNm5lqFNYxdFjZG8c85J7VgshpScJKpifB6-n_g=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipNQY1Z_JROmZNLlBHm9ryBn1VxBrFOVW_qW9vM0=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipNrBF_n_rOwkKwJhIhTLG1s61u4OoLymOzI4C9P=w1920-h1080-k-no",
+            "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=r-YUC_B7ZzsEYh8v3lz3_A&cb_client=maps_sv.tactile.gps&w=203&h=100&yaw=205.99265&pitch=0&thumbfov=100",
+            "https://lh5.googleusercontent.com/p/AF1QipPw00rGFFEMc0l3nuskxugHdoHqOf_lkDnbzm5I=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipOvNWY76V8L8nPafDAMgOHCv69ezZbDX6maYBLp=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipM438kY59jfuMrDOjnkq45w7oA5DGJ-c5pTfbQc=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipOmXrSjIvB2PmzgQfELVWa89I5Lgo4yjfTRuQ2Z=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipPTktdmJmjQ5W8e1kBnuFyZqnUrIZqdItUbskMP=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipMqIikSNCmLvwgBTqE2RHmJeZWFIEq9SZ2XGaKP=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipN8VCQTftaPWa7cRT2otFJ7fI1oCZt9g7AhYI28=w1920-h1080-k-no",
+            "https://lh5.googleusercontent.com/p/AF1QipMq5jrjybzr5UzFym0WebQCcqsd0tR-NAamoYis=w1920-h1080-k-no"
+          ],
+          "reviews": [
+            {
+              "name": "Francesco Capone",
+              "text": "In questa bella e tranquilla location sui colli pianoresi abbiamo festeggiato la cresima di nostra figlia Greta qualche giorno fa. Tutto è partito con aperitivo di benvenuto nel giardino adiacente il ristorante, con panorama mozzafiato nell'ora del tramonto (vedi foto). Claudia e Marco che gestiscono la location sono stati davvero molto disponibili sin dal primo incontro conoscitivo e ci hanno accontentato nelle nostre richieste, inclusa quella di allestire un tavolino decorato per le bomboniere e i regali vicino al nostro tavolo.\nSiamo soddisfattissimi anche del menu e delle pietanze, le portate gustose e davvero abbondanti, prezzi più che onesti.\nMarco ci ha seguito e servito con attenzione e simpatia per tutta la serata, molto attento e simpatico anche verso i bimbi.\nNon possiamo che dire grazie allo staff del \"Grillo Parlante\" per aver contribuito a rendere la cresima di Greta una giornata indimenticabile.\nNon mancheremo di tornare a trovarvi per godere del vostro panorama, dei vostri piatti e della vostra simpatica cortesia.\n\nA presto\nFrancesco & Federica",
+              "textTranslated": null,
+              "publishAt": "9 mesi fa",
+              "publishedAtDate": "2023-10-03T14:49:24.170Z",
+              "likesCount": 1,
+              "reviewId": "ChZDSUhNMG9nS0VJQ0FnSURaaWNmeGVBEAE",
+              "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURaaWNmeGVBEAE!2m1!1s0x0:0xb35f0db8117c6427!3m1!1s2@1:CIHM0ogKEICAgIDZicfxeA%7CCgsI9NPwqAYQ8PHEUQ%7C?hl=it",
+              "reviewerId": "102879114727198715823",
+              "reviewerUrl": "https://www.google.com/maps/contrib/102879114727198715823?hl=it",
+              "reviewerPhotoUrl": "https://lh3.googleusercontent.com/a-/ALV-UjWKEut3yRC8hcR7ufxfYGl3SDPGrhJEkmdrTFV8g2yasJQ6q3Bj=s120-c-rp-mo-br100",
+              "reviewerNumberOfReviews": null,
+              "isLocalGuide": false,
+              "reviewOrigin": "Google",
+              "stars": 5,
+              "rating": null,
+              "responseFromOwnerDate": null,
+              "responseFromOwnerText": null,
+              "reviewImageUrls": [
+                "https://lh5.googleusercontent.com/p/AF1QipMEzhVSDoIZhXeyUchk5TpLZPgmg-azU0Bac3Op=w1920-h1080-k-no-p",
+                "https://lh5.googleusercontent.com/p/AF1QipN3qw1YUCZH-YiK9znhHKgow0llSupiFV62NyAy=w1920-h1080-k-no-p"
+              ],
+              "reviewContext": {},
+              "reviewDetailedRating": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "versionId": "fdd5338e-2c7b-4890-b323-fe0318b506b4",
+  "activeVersionId": null,
+  "versionCounter": 5,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-12-19T17:46:07.486Z",
+      "createdAt": "2025-12-19T17:46:07.486Z",
+      "role": "workflow:owner",
+      "workflowId": "L4pPnozuubUVFp5H",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,680 @@
+{
+  "updatedAt": "2024-11-05T15:46:32.000Z",
+  "createdAt": "2024-11-03T17:43:54.481Z",
+  "id": "9A0SCsHVXI13Sufg",
+  "name": "🔥iPhone card",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eec80028-d557-4dc7-89b2-a940401b7ff6",
+              "name": "name",
+              "value": "={{ $json.headers.name }}",
+              "type": "string"
+            },
+            {
+              "id": "98796bcb-8598-4b30-9942-6a4baa4d4362",
+              "name": "price",
+              "value": "={{ $json.headers.price.replaceAll(\",\",\".\") }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "79bd1b1f-657b-45ac-8ab2-196fed795459",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "0705db42-513d-4373-aa3a-681fec3787fe",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        920,
+        560
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "100670e3-65bf-49b0-9e66-c321bd904c1b",
+      "name": "Auto-fixing Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "48521902-b110-4756-9e86-3ef6a4de503d",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        800
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "igqCGsHg8vp0q97r",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"name\": \"Starbucks\",\n  \"price\": 2.7,\n  \"category\": \"Bevande\"\n}"
+      },
+      "id": "44c9bbcb-ba93-45ad-9863-b2ded0b7ccf1",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1540,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"name\":\"{{ $json.name }}\", \"price\":{{ $json.price }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "ridammi il json preciso con questi dati che ti ha passato l'utente, la categoria inventala tu in italiano in base al nome della spesa.\n\nSuccessivamente crea una row a database nella tabella money tramite la funzione Create_row_money con il json che hai generato"
+        }
+      },
+      "id": "6d52f7fe-eb56-4410-9082-b0d8b2d46e3d",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        980,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "money",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.output.name }}"
+            },
+            {
+              "fieldId": "profile_id",
+              "fieldValue": "43ab1589-b804-4fac-9282-83084e6a25c8"
+            },
+            {
+              "fieldId": "price",
+              "fieldValue": "={{ $json.output.price }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $json.output.category }}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "Uscita"
+            }
+          ]
+        }
+      },
+      "id": "957c4e54-f622-4981-b79d-606bb160aa88",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        340
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "DAj2UqfQGvKuvygI",
+          "name": "Supabase ai money"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "149239480",
+        "text": "=La tua spesa è stata aggiunta:  {{ $json.name }}, prezzo €{{ $json.price }} e categoria: {{ $json.category }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "58b907e6-a899-48d4-952d-0514e7f9e3bf",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1640,
+        340
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "QLoNB3vhCZqe7kxS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "iphonecard",
+        "options": {}
+      },
+      "id": "717cfcfa-9a07-4cae-87ca-d9ac96e762a2",
+      "name": "Webhook2",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        500,
+        340
+      ],
+      "webhookId": "cd31be63-5247-41e7-934f-ae321a290f98",
+      "typeVersion": 2
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook2": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.raffaelelugibello.it",
+            "user-agent": "BackgroundShortcutRunner/3107.0.10 CFNetwork/1568.200.51 Darwin/24.1.0",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br",
+            "accept-language": "en-GB,en;q=0.9",
+            "name": "Starbucks",
+            "price": "2,70 ",
+            "x-forwarded-for": "213.143.61.253",
+            "x-forwarded-host": "n8n.raffaelelugibello.it",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.raffaelelugibello.it/webhook-test/iphonecard",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "83da8cf5-f483-4274-9a42-305804e920cd",
+  "activeVersionId": "83da8cf5-f483-4274-9a42-305804e920cd",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2024-11-03T17:43:54.493Z",
+      "createdAt": "2024-11-03T17:43:54.493Z",
+      "role": "workflow:owner",
+      "workflowId": "9A0SCsHVXI13Sufg",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "83da8cf5-f483-4274-9a42-305804e920cd",
+    "workflowId": "9A0SCsHVXI13Sufg",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "eec80028-d557-4dc7-89b2-a940401b7ff6",
+                "name": "name",
+                "value": "={{ $json.headers.name }}",
+                "type": "string"
+              },
+              {
+                "id": "98796bcb-8598-4b30-9942-6a4baa4d4362",
+                "name": "price",
+                "value": "={{ $json.headers.price.replaceAll(\",\",\".\") }}",
+                "type": "number"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "79bd1b1f-657b-45ac-8ab2-196fed795459",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          720,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o-2024-08-06",
+          "options": {}
+        },
+        "id": "0705db42-513d-4373-aa3a-681fec3787fe",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          920,
+          560
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "igqCGsHg8vp0q97r",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "100670e3-65bf-49b0-9e66-c321bd904c1b",
+        "name": "Auto-fixing Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+        "typeVersion": 1,
+        "position": [
+          1340,
+          580
+        ]
+      },
+      {
+        "parameters": {
+          "model": "gpt-4o-2024-08-06",
+          "options": {}
+        },
+        "id": "48521902-b110-4756-9e86-3ef6a4de503d",
+        "name": "OpenAI Chat Model1",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1,
+        "position": [
+          1340,
+          800
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "igqCGsHg8vp0q97r",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"name\": \"Starbucks\",\n  \"price\": 2.7,\n  \"category\": \"Bevande\"\n}"
+        },
+        "id": "44c9bbcb-ba93-45ad-9863-b2ded0b7ccf1",
+        "name": "Structured Output Parser",
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          1540,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=\"name\":\"{{ $json.name }}\", \"price\":{{ $json.price }}",
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "ridammi il json preciso con questi dati che ti ha passato l'utente, la categoria inventala tu in italiano in base al nome della spesa.\n\nSuccessivamente crea una row a database nella tabella money tramite la funzione Create_row_money con il json che hai generato"
+          }
+        },
+        "id": "6d52f7fe-eb56-4410-9082-b0d8b2d46e3d",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.6,
+        "position": [
+          980,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "tableId": "money",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "name",
+                "fieldValue": "={{ $json.output.name }}"
+              },
+              {
+                "fieldId": "profile_id",
+                "fieldValue": "43ab1589-b804-4fac-9282-83084e6a25c8"
+              },
+              {
+                "fieldId": "price",
+                "fieldValue": "={{ $json.output.price }}"
+              },
+              {
+                "fieldId": "category",
+                "fieldValue": "={{ $json.output.category }}"
+              },
+              {
+                "fieldId": "type",
+                "fieldValue": "Uscita"
+              }
+            ]
+          }
+        },
+        "id": "957c4e54-f622-4981-b79d-606bb160aa88",
+        "name": "Supabase",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1420,
+          340
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "DAj2UqfQGvKuvygI",
+            "name": "Supabase ai money"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "149239480",
+          "text": "=La tua spesa è stata aggiunta:  {{ $json.name }}, prezzo €{{ $json.price }} e categoria: {{ $json.category }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "id": "58b907e6-a899-48d4-952d-0514e7f9e3bf",
+        "name": "Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1640,
+          340
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "QLoNB3vhCZqe7kxS",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "path": "iphonecard",
+          "options": {}
+        },
+        "id": "717cfcfa-9a07-4cae-87ca-d9ac96e762a2",
+        "name": "Webhook2",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          500,
+          340
+        ],
+        "webhookId": "cd31be63-5247-41e7-934f-ae321a290f98",
+        "typeVersion": 2
+      }
+    ],
+    "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Auto-fixing Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Auto-fixing Output Parser",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Auto-fixing Output Parser",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Supabase",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase": {
+        "main": [
+          [
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook2": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

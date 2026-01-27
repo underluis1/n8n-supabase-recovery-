@@ -1,0 +1,306 @@
+{
+  "updatedAt": "2026-01-15T15:05:23.335Z",
+  "createdAt": "2026-01-13T09:45:23.800Z",
+  "id": "8gHI8nF7Ib3slzAn",
+  "name": "version",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "command": "n8n --version\n"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9d69c9e3-fd08-4b7d-9419-bf74583dd703",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "path": "version",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dc06f56b-650f-476c-ae25-0bbdede34f55",
+      "name": "Webhook",
+      "webhookId": "9171db49-0c56-471b-9b7f-9eeb8d80c538",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eLPHcGCtzV6skRoX",
+          "name": "ciaociao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9359538b-33e9-4827-bf57-b19973c13349",
+              "name": "version",
+              "value": "={{ $json.stdout }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        0
+      ],
+      "id": "29a869ab-faf9-46c3-9195-77f01ee6a198",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        608,
+        0
+      ],
+      "id": "78637a14-4257-4156-b6e3-cb1dba886856",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6450d85f-37fc-4a4c-9fd6-2aa1f8647228",
+  "activeVersionId": "6450d85f-37fc-4a4c-9fd6-2aa1f8647228",
+  "versionCounter": 13,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T09:45:23.808Z",
+      "createdAt": "2026-01-13T09:45:23.808Z",
+      "role": "workflow:owner",
+      "workflowId": "8gHI8nF7Ib3slzAn",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-01-15T15:05:23.337Z",
+    "createdAt": "2026-01-15T15:05:23.337Z",
+    "versionId": "6450d85f-37fc-4a4c-9fd6-2aa1f8647228",
+    "workflowId": "8gHI8nF7Ib3slzAn",
+    "nodes": [
+      {
+        "parameters": {
+          "command": "n8n --version\n"
+        },
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1,
+        "position": [
+          208,
+          0
+        ],
+        "id": "9d69c9e3-fd08-4b7d-9419-bf74583dd703",
+        "name": "Execute Command"
+      },
+      {
+        "parameters": {
+          "path": "version",
+          "authentication": "headerAuth",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "dc06f56b-650f-476c-ae25-0bbdede34f55",
+        "name": "Webhook",
+        "webhookId": "9171db49-0c56-471b-9b7f-9eeb8d80c538",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "eLPHcGCtzV6skRoX",
+            "name": "ciaociao"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "9359538b-33e9-4827-bf57-b19973c13349",
+                "name": "version",
+                "value": "={{ $json.stdout }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          400,
+          0
+        ],
+        "id": "29a869ab-faf9-46c3-9195-77f01ee6a198",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          608,
+          0
+        ],
+        "id": "78637a14-4257-4156-b6e3-cb1dba886856",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Execute Command": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Execute Command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "raffaele lugibello",
+    "name": null,
+    "description": null
+  }
+}

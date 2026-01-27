@@ -20,6 +20,21 @@ source scripts/lib/logger.sh
 
 CONFIG_FILE=".dev-cloud-config"
 
+# Find the best pg_dump version (prefer PostgreSQL 17+ for Supabase)
+find_pg_dump() {
+    # Try PostgreSQL 17 first (for Supabase compatibility)
+    if [[ -x "/opt/homebrew/opt/postgresql@17/bin/pg_dump" ]]; then
+        echo "/opt/homebrew/opt/postgresql@17/bin/pg_dump"
+    elif [[ -x "/usr/local/opt/postgresql@17/bin/pg_dump" ]]; then
+        echo "/usr/local/opt/postgresql@17/bin/pg_dump"
+    else
+        # Fallback to system pg_dump
+        which pg_dump 2>/dev/null || echo "pg_dump"
+    fi
+}
+
+PG_DUMP=$(find_pg_dump)
+
 load_config() {
     if [[ -f "$CONFIG_FILE" ]]; then
         log_info "Carico configurazione esistente..."
@@ -29,26 +44,63 @@ load_config() {
 
         echo ""
         log_header "Configurazione Supabase Cloud Dev"
-        echo -n "Supabase DB Host (es: db.xxx.supabase.co): "
-        read -r SUPABASE_HOST
 
-        echo -n "Supabase DB Password: "
-        read -rs SUPABASE_PASSWORD
+        echo "Tipo di connessione:"
+        echo "  1) Session Pooler (Port 5432 - Recommended)"
+        echo "  2) Transaction Pooler (Port 6543)"
+        echo "  3) Direct Connection (Port 5432)"
         echo ""
+        echo -n "Scelta [1]: "
+        read -r conn_type
+        conn_type=${conn_type:-1}
+
+        case $conn_type in
+            1)
+                echo ""
+                log_info "Session Pooler selezionato"
+                echo -n "Supabase Project Reference (es: abc123def456): "
+                read -r project_ref
+                SUPABASE_HOST="aws-0-eu-west-3.pooler.supabase.com"
+                SUPABASE_PORT="5432"
+                SUPABASE_USER="postgres.${project_ref}"
+                echo "Host: $SUPABASE_HOST"
+                echo "Port: $SUPABASE_PORT"
+                echo "User: $SUPABASE_USER"
+                ;;
+            2)
+                echo ""
+                log_info "Transaction Pooler selezionato"
+                echo -n "Supabase Project Reference (es: abc123def456): "
+                read -r project_ref
+                echo -n "Supabase Host (es: aws-1-eu-west-3.pooler.supabase.com): "
+                read -r SUPABASE_HOST
+                SUPABASE_PORT="6543"
+                SUPABASE_USER="postgres.${project_ref}"
+                echo "Port: $SUPABASE_PORT"
+                echo "User: $SUPABASE_USER"
+                ;;
+            3)
+                echo ""
+                log_info "Direct Connection selezionata"
+                echo -n "Supabase Host (es: db.xxx.supabase.co): "
+                read -r SUPABASE_HOST
+                SUPABASE_PORT="5432"
+                SUPABASE_USER="postgres"
+                echo "Port: $SUPABASE_PORT"
+                ;;
+        esac
 
         echo ""
         log_header "Configurazione n8n Cloud Dev"
         echo -n "n8n URL (es: https://xxx.app.n8n.cloud): "
         read -r N8N_URL
 
-        echo -n "n8n API Key: "
-        read -rs N8N_API_KEY
-        echo ""
-
         # Salva config (escludendo password)
         cat > "$CONFIG_FILE" << EOF
 # Dev Cloud Configuration
 SUPABASE_HOST="${SUPABASE_HOST}"
+SUPABASE_PORT="${SUPABASE_PORT}"
+SUPABASE_USER="${SUPABASE_USER}"
 N8N_URL="${N8N_URL}"
 EOF
 
@@ -60,6 +112,20 @@ EOF
             echo "$CONFIG_FILE" >> .gitignore
             log_info "Aggiunto $CONFIG_FILE a .gitignore"
         fi
+    fi
+
+    # Richiedi password se non già in memoria
+    if [[ -z "${SUPABASE_PASSWORD:-}" ]]; then
+        echo ""
+        echo -n "Supabase DB Password: "
+        read -rs SUPABASE_PASSWORD
+        echo ""
+    fi
+
+    if [[ -z "${N8N_API_KEY:-}" ]]; then
+        echo -n "n8n API Key: "
+        read -rs N8N_API_KEY
+        echo ""
     fi
 }
 
@@ -80,7 +146,7 @@ generate_supabase_migration() {
     # Trova prossimo numero
     local last_num=$(ls -1 migrations/supabase/*.sql 2>/dev/null | \
         tail -1 | \
-        grep -oP '^\d+' || echo "000")
+        sed -E 's/^.*\/([0-9]+)_.*/\1/' || echo "000")
     local next_num=$(printf "%03d" $((10#$last_num + 1)))
 
     local migration_file="migrations/supabase/${next_num}_${migration_name}.sql"
@@ -101,11 +167,12 @@ generate_supabase_migration() {
     case $choice in
         1)
             log_info "Export schema completo..."
+            log_debug "Using: $PG_DUMP"
 
-            PGPASSWORD="$SUPABASE_PASSWORD" pg_dump \
+            PGPASSWORD="$SUPABASE_PASSWORD" "$PG_DUMP" \
                 -h "$SUPABASE_HOST" \
-                -p 5432 \
-                -U postgres \
+                -p "${SUPABASE_PORT:-5432}" \
+                -U "${SUPABASE_USER:-postgres}" \
                 -d postgres \
                 --schema-only \
                 --no-owner \
@@ -233,18 +300,44 @@ sync_n8n_workflows() {
 sync_all_n8n_workflows() {
     log_info "Sync tutti i workflows..."
 
-    # Get workflows list
-    local workflows=$(curl -s \
-        -H "X-N8N-API-KEY: $N8N_API_KEY" \
-        "${N8N_URL}/api/v1/workflows")
+    # Remove trailing slash from URL
+    local n8n_url="${N8N_URL%/}"
 
-    if [[ $? -ne 0 ]]; then
-        log_error "Errore connessione n8n"
+    # Get workflows list
+    log_debug "Calling: ${n8n_url}/api/v1/workflows"
+    local workflows=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+        -H "X-N8N-API-KEY: $N8N_API_KEY" \
+        "${n8n_url}/api/v1/workflows")
+
+    local http_code=$(echo "$workflows" | grep "HTTP_CODE:" | cut -d: -f2)
+    local response=$(echo "$workflows" | sed '/HTTP_CODE:/d')
+
+    if [[ "$http_code" != "200" ]]; then
+        log_error "Errore HTTP $http_code dalla API n8n"
+        log_debug "Response: $response"
+        echo ""
+        echo "Possibili cause:"
+        echo "  - API Key errata"
+        echo "  - URL n8n errato"
+        echo "  - n8n non raggiungibile"
+        echo ""
+        echo "Response ricevuta:"
+        echo "$response" | head -10
         return 1
     fi
 
-    local count=$(echo "$workflows" | jq -r '.data | length')
+    # Validate JSON
+    if ! echo "$response" | jq empty 2>/dev/null; then
+        log_error "Risposta non è JSON valido"
+        echo "Response:"
+        echo "$response" | head -20
+        return 1
+    fi
+
+    local count=$(echo "$response" | jq -r '.data | length')
     log_info "Trovati $count workflows"
+
+    workflows="$response"
 
     # Export each
     local i=0
@@ -259,7 +352,7 @@ sync_all_n8n_workflows() {
         # Get full workflow
         local workflow_full=$(curl -s \
             -H "X-N8N-API-KEY: $N8N_API_KEY" \
-            "${N8N_URL}/api/v1/workflows/${workflow_id}")
+            "${n8n_url}/api/v1/workflows/${workflow_id}")
 
         # Trova file esistente o crea nuovo
         local existing_file=$(grep -l "\"id\": \"${workflow_id}\"" migrations/n8n/workflows/*.json 2>/dev/null | head -1)
@@ -272,7 +365,7 @@ sync_all_n8n_workflows() {
             # Nuovo workflow - trova prossimo numero
             local last_num=$(ls -1 migrations/n8n/workflows/*.json 2>/dev/null | \
                 tail -1 | \
-                grep -oP '^\d+' || echo "000")
+                sed -E 's/^.*\/([0-9]+)_.*/\1/' || echo "000")
             local next_num=$(printf "%03d" $((10#$last_num + 1)))
 
             local new_file="migrations/n8n/workflows/${next_num}_${workflow_name}.json"
@@ -287,10 +380,13 @@ sync_all_n8n_workflows() {
 export_single_n8n_workflow() {
     log_info "Export singolo workflow..."
 
+    # Remove trailing slash from URL
+    local n8n_url="${N8N_URL%/}"
+
     # Lista workflows
     local workflows=$(curl -s \
         -H "X-N8N-API-KEY: $N8N_API_KEY" \
-        "${N8N_URL}/api/v1/workflows")
+        "${n8n_url}/api/v1/workflows")
 
     echo ""
     echo "Workflows disponibili:"
@@ -303,14 +399,14 @@ export_single_n8n_workflow() {
     # Get workflow
     local workflow=$(curl -s \
         -H "X-N8N-API-KEY: $N8N_API_KEY" \
-        "${N8N_URL}/api/v1/workflows/${workflow_id}")
+        "${n8n_url}/api/v1/workflows/${workflow_id}")
 
     local workflow_name=$(echo "$workflow" | jq -r '.name' | sed 's/[^a-zA-Z0-9_-]/_/g')
 
     # Trova prossimo numero
     local last_num=$(ls -1 migrations/n8n/workflows/*.json 2>/dev/null | \
         tail -1 | \
-        grep -oP '^\d+' || echo "000")
+        sed -E 's/^.*\/([0-9]+)_.*/\1/' || echo "000")
     local next_num=$(printf "%03d" $((10#$last_num + 1)))
 
     local file="migrations/n8n/workflows/${next_num}_${workflow_name}.json"
@@ -323,10 +419,13 @@ export_single_n8n_workflow() {
 sync_new_n8n_workflows() {
     log_info "Sync solo nuovi workflows..."
 
+    # Remove trailing slash from URL
+    local n8n_url="${N8N_URL%/}"
+
     # Get all workflows
     local workflows=$(curl -s \
         -H "X-N8N-API-KEY: $N8N_API_KEY" \
-        "${N8N_URL}/api/v1/workflows")
+        "${n8n_url}/api/v1/workflows")
 
     # Check each workflow
     local new_count=0
@@ -346,12 +445,12 @@ sync_new_n8n_workflows() {
         # Export
         local workflow_full=$(curl -s \
             -H "X-N8N-API-KEY: $N8N_API_KEY" \
-            "${N8N_URL}/api/v1/workflows/${workflow_id}")
+            "${n8n_url}/api/v1/workflows/${workflow_id}")
 
         # Trova numero
         local last_num=$(ls -1 migrations/n8n/workflows/*.json 2>/dev/null | \
             tail -1 | \
-            grep -oP '^\d+' || echo "000")
+            sed -E 's/^.*\/([0-9]+)_.*/\1/' || echo "000")
         local next_num=$(printf "%03d" $((10#$last_num + 1)))
 
         local file="migrations/n8n/workflows/${next_num}_${workflow_name}.json"

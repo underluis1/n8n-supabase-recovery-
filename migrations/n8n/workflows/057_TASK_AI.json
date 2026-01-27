@@ -1,0 +1,568 @@
+{
+  "updatedAt": "2025-09-19T10:17:42.000Z",
+  "createdAt": "2025-09-18T23:45:23.068Z",
+  "id": "UDMvjVJPIrfbQh1H",
+  "name": "TASK AI",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "95dac5d5-78e4-46ce-8e09-a07786bab26b",
+      "name": "When chat message received",
+      "webhookId": "0597f986-42fa-44ba-93f1-602497ff45eb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Sei un assistente che permette all'utente di gestire delle task.\n\nQuando l'utente ti chiede di dirgli quali sono le sue task devi chiamare il tool Task_search, puoi anche filtrare i dati per la colonna execute (se execute è false non ha svolto la task altrimenti se execute è true ha svolto la task)\n\nSe l'utente ti dice di aver completato una task devi chiamare il tool completed_task e inserire a database la task che ha completato chiedendo all'utente tutte le informazioni necessarie per il completamento, devi anche recuperare l'id della task che vuole completare l'utente quindi devi chiamare il tool Task_search per visualizzare le task dell'utente e cercare quella che lui vuole completare, successivamente inserisci l'id della task completata. infine devi chiamare il tool update_task per fare un update della task che l'utente ha completato mettendo la colonna execute su TRUE"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        380,
+        0
+      ],
+      "id": "c7c43894-a7b0-4eec-bba3-8e432958af9e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-30b-a3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        220,
+        220
+      ],
+      "id": "74c8e5bf-3603-4566-b3b1-3e7c65a490c2",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "DIaCgMCJChhjSXPT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "task_progress",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "task_id",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues0_Field_Value', ``, 'string') }}"
+            },
+            {
+              "fieldId": "profile_id",
+              "fieldValue": "d76863a7-91e9-4a37-bcac-3bd81f43688e"
+            },
+            {
+              "fieldId": "performed_at",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues2_Field_Value', ``, 'string') }}"
+            },
+            {
+              "fieldId": "note",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues3_Field_Value', ``, 'string') }}"
+            },
+            {
+              "fieldId": "verification",
+              "fieldValue": "approved"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "id": "bbffcf4c-4a33-46fe-86db-7440f8db3316",
+      "name": "completed_task",
+      "credentials": {
+        "supabaseApi": {
+          "id": "PCiHfvJo0KzxZHNb",
+          "name": "Sparacodici"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get many rows in Supabase",
+        "operation": "getAll",
+        "tableId": "task",
+        "returnAll": true,
+        "filterType": "string"
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        580,
+        220
+      ],
+      "id": "5e8cd978-4f5d-4ad6-b102-790972cf639a",
+      "name": "Task_search",
+      "credentials": {
+        "supabaseApi": {
+          "id": "PCiHfvJo0KzxZHNb",
+          "name": "Sparacodici"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "task",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Field_Value', `questo campo fa riferimento all'id della task da aggiornare`, 'string') }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "execute",
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues0_Field_Value', `Questo campo puo essere solo un TRUE, FALSE. se l'utente completa una task allora è TRUE altrimenti è FALSE`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        700,
+        220
+      ],
+      "id": "52fba41d-90b5-4eef-9136-6be06ae2b829",
+      "name": "update_task",
+      "credentials": {
+        "supabaseApi": {
+          "id": "PCiHfvJo0KzxZHNb",
+          "name": "Sparacodici"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryZep",
+      "typeVersion": 1.3,
+      "position": [
+        340,
+        220
+      ],
+      "id": "cf47f83f-f39e-441f-8f62-15f1fa39ebf2",
+      "name": "Zep",
+      "credentials": {
+        "zepApi": {
+          "id": "vmcGC48kot4eFrKJ",
+          "name": "Zep Api account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "completed_task": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_task": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zep": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "54a70516-d5ab-4951-a215-d44adacafc73",
+  "activeVersionId": "54a70516-d5ab-4951-a215-d44adacafc73",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-09-18T23:45:23.076Z",
+      "createdAt": "2025-09-18T23:45:23.076Z",
+      "role": "workflow:owner",
+      "workflowId": "UDMvjVJPIrfbQh1H",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "54a70516-d5ab-4951-a215-d44adacafc73",
+    "workflowId": "UDMvjVJPIrfbQh1H",
+    "nodes": [
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "95dac5d5-78e4-46ce-8e09-a07786bab26b",
+        "name": "When chat message received",
+        "webhookId": "0597f986-42fa-44ba-93f1-602497ff45eb"
+      },
+      {
+        "parameters": {
+          "options": {
+            "systemMessage": "Sei un assistente che permette all'utente di gestire delle task.\n\nQuando l'utente ti chiede di dirgli quali sono le sue task devi chiamare il tool Task_search, puoi anche filtrare i dati per la colonna execute (se execute è false non ha svolto la task altrimenti se execute è true ha svolto la task)\n\nSe l'utente ti dice di aver completato una task devi chiamare il tool completed_task e inserire a database la task che ha completato chiedendo all'utente tutte le informazioni necessarie per il completamento, devi anche recuperare l'id della task che vuole completare l'utente quindi devi chiamare il tool Task_search per visualizzare le task dell'utente e cercare quella che lui vuole completare, successivamente inserisci l'id della task completata. infine devi chiamare il tool update_task per fare un update della task che l'utente ha completato mettendo la colonna execute su TRUE"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2,
+        "position": [
+          380,
+          0
+        ],
+        "id": "c7c43894-a7b0-4eec-bba3-8e432958af9e",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": "qwen/qwen3-30b-a3b",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          220,
+          220
+        ],
+        "id": "74c8e5bf-3603-4566-b3b1-3e7c65a490c2",
+        "name": "OpenRouter Chat Model",
+        "credentials": {
+          "openRouterApi": {
+            "id": "DIaCgMCJChhjSXPT",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "task_progress",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "task_id",
+                "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues0_Field_Value', ``, 'string') }}"
+              },
+              {
+                "fieldId": "profile_id",
+                "fieldValue": "d76863a7-91e9-4a37-bcac-3bd81f43688e"
+              },
+              {
+                "fieldId": "performed_at",
+                "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues2_Field_Value', ``, 'string') }}"
+              },
+              {
+                "fieldId": "note",
+                "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues3_Field_Value', ``, 'string') }}"
+              },
+              {
+                "fieldId": "verification",
+                "fieldValue": "approved"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabaseTool",
+        "typeVersion": 1,
+        "position": [
+          460,
+          220
+        ],
+        "id": "bbffcf4c-4a33-46fe-86db-7440f8db3316",
+        "name": "completed_task",
+        "credentials": {
+          "supabaseApi": {
+            "id": "PCiHfvJo0KzxZHNb",
+            "name": "Sparacodici"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "descriptionType": "manual",
+          "toolDescription": "Get many rows in Supabase",
+          "operation": "getAll",
+          "tableId": "task",
+          "returnAll": true,
+          "filterType": "string"
+        },
+        "type": "n8n-nodes-base.supabaseTool",
+        "typeVersion": 1,
+        "position": [
+          580,
+          220
+        ],
+        "id": "5e8cd978-4f5d-4ad6-b102-790972cf639a",
+        "name": "Task_search",
+        "credentials": {
+          "supabaseApi": {
+            "id": "PCiHfvJo0KzxZHNb",
+            "name": "Sparacodici"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "task",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Field_Value', `questo campo fa riferimento all'id della task da aggiornare`, 'string') }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "execute",
+                "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues0_Field_Value', `Questo campo puo essere solo un TRUE, FALSE. se l'utente completa una task allora è TRUE altrimenti è FALSE`, 'string') }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabaseTool",
+        "typeVersion": 1,
+        "position": [
+          700,
+          220
+        ],
+        "id": "52fba41d-90b5-4eef-9136-6be06ae2b829",
+        "name": "update_task",
+        "credentials": {
+          "supabaseApi": {
+            "id": "PCiHfvJo0KzxZHNb",
+            "name": "Sparacodici"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.memoryZep",
+        "typeVersion": 1.3,
+        "position": [
+          340,
+          220
+        ],
+        "id": "cf47f83f-f39e-441f-8f62-15f1fa39ebf2",
+        "name": "Zep",
+        "credentials": {
+          "zepApi": {
+            "id": "vmcGC48kot4eFrKJ",
+            "name": "Zep Api account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "completed_task": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Task_search": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_task": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Zep": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}

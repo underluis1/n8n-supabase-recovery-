@@ -1,0 +1,180 @@
+{
+  "updatedAt": "2025-03-11T01:20:18.000Z",
+  "createdAt": "2025-03-11T00:32:40.421Z",
+  "id": "bd0ityy6VjAMVFe1",
+  "name": "SCRAPER SITI",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "text": "={{ $json.data }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"url\": \"https://www.nomesito.com\",\n  \"metadata\": {\n    \"title\": \"Titolo della Pagina\",\n    \"description\": \"Meta description della pagina\",\n    \"keywords\": [\"keyword1\", \"keyword2\", \"keyword3\"],\n    \"canonical\": \"https://www.nomesito.com\",\n    \"language\": \"it\",\n    \"charset\": \"UTF-8\"\n  },\n  \"headings\": {\n    \"h1\": [\"Titolo principale\"],\n    \"h2\": [\"Sottotitolo 1\", \"Sottotitolo 2\"],\n    \"h3\": [\"Sezione 1\", \"Sezione 2\"]\n  },\n  \"paragraphs\": [\n    \"Testo del primo paragrafo...\",\n    \"Testo del secondo paragrafo...\"\n  ],\n  \"links\": [\n    {\n      \"text\": \"Home\",\n      \"href\": \"https://www.nomesito.com/home\",\n      \"external\": false\n    },\n    {\n      \"text\": \"Articolo interessante\",\n      \"href\": \"https://www.altrisito.com/articolo\",\n      \"external\": true\n    }\n  ],\n  \"images\": [\n    {\n      \"src\": \"https://www.nomesito.com/img1.jpg\",\n      \"alt\": \"Immagine descrittiva\"\n    },\n    {\n      \"src\": \"https://www.nomesito.com/img2.jpg\",\n      \"alt\": \"Un'altra immagine\"\n    }\n  ],\n  \"scripts\": [\n    {\n      \"src\": \"https://www.nomesito.com/script.js\",\n      \"type\": \"application/javascript\"\n    }\n  ],\n  \"stylesheets\": [\n    {\n      \"href\": \"https://www.nomesito.com/style.css\",\n      \"media\": \"all\"\n    }\n  ],\n  \"forms\": [\n    {\n      \"action\": \"/submit\",\n      \"method\": \"POST\",\n      \"inputs\": [\n        {\n          \"name\": \"email\",\n          \"type\": \"email\",\n          \"placeholder\": \"Inserisci la tua email\"\n        },\n        {\n          \"name\": \"password\",\n          \"type\": \"password\",\n          \"placeholder\": \"Inserisci la password\"\n        }\n      ]\n    }\n  ],\n  \"tables\": [\n    {\n      \"headers\": [\"Nome\", \"Cognome\", \"Età\"],\n      \"rows\": [\n        [\"Mario\", \"Rossi\", \"30\"],\n        [\"Luca\", \"Bianchi\", \"25\"]\n      ]\n    }\n  ]\n}\n",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        520,
+        0
+      ],
+      "id": "ca5e0eb0-aaef-48bb-9e6d-7bb07650fcbe",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "openai/o3-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        460,
+        220
+      ],
+      "id": "7b9aff42-9eb4-4537-ae57-883b84265c8d",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "DIaCgMCJChhjSXPT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://raffaelelugibello.it",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "8118e382-4396-47db-91fb-8975fc5a4d7b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "16435bc2-5ccc-44f8-9f7a-ee43bafd6e16",
+      "name": "When clicking ‘Test workflow’"
+    }
+  ],
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "711a999c-1df4-4d4a-9157-40a3c0265b13",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-03-11T00:32:40.431Z",
+      "createdAt": "2025-03-11T00:32:40.431Z",
+      "role": "workflow:owner",
+      "workflowId": "bd0ityy6VjAMVFe1",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,486 @@
+{
+  "updatedAt": "2026-01-20T16:30:32.408Z",
+  "createdAt": "2026-01-20T11:23:16.582Z",
+  "id": "nLzKTCorSrzYrAJI",
+  "name": "Backup Workflows",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "command": "n8n export:workflow --all"
+      },
+      "id": "c08e9e68-b48c-475d-9b9d-611b1cb3ba4c",
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function extractJsonArray(input) {\n  const start = input.indexOf('[');\n  if (start === -1) {\n    throw new Error('JSON array not found');\n  }\n  const jsonPart = input.slice(start);\n  return JSON.parse(jsonPart);\n}\n\nconst raw = $('Execute Command').first().json.stdout\nconst workflows = extractJsonArray(raw)\n\nreturn { workflows }"
+      },
+      "id": "4da20a44-edb3-47bc-ba0e-a816fe4fe34c",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "workflows",
+        "options": {}
+      },
+      "id": "cefcef2f-7258-4226-87e5-eac655d352a1",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        752,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "binaryPropertyName": "workflow",
+        "options": {
+          "format": true,
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "id": "b46e1b67-12eb-4030-b2c6-b3f4c87e6c39",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $now.format('dd-MM-yyyy_HH-mm-ss') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1iNM4rwNiLhB06RA-rQpj-8NXrt0xq6Te",
+          "mode": "list",
+          "cachedResultName": "Calliope_n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1iNM4rwNiLhB06RA-rQpj-8NXrt0xq6Te"
+        },
+        "options": {}
+      },
+      "id": "ac274a83-f61a-4176-b0ea-e23b94a2230f",
+      "name": "Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "workflow",
+        "name": "=",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "dfa1cf6b-ef1f-48e1-9677-5d8f4f631ec8",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1184,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        368
+      ],
+      "id": "3c009be9-0c33-40e2-b232-b8ecb74524ff",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        224,
+        368
+      ],
+      "id": "2ef76c21-954d-4021-86e3-e532693a1981",
+      "name": "Get many workflows",
+      "credentials": {
+        "n8nApi": {
+          "id": "ugagR9CfGPS7KHnC",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "7a7c09dc-0a34-4e58-b252-134e574e4730",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "command": "n8n export:credentials --all"
+      },
+      "id": "3a22b81b-0e23-4115-906f-1fa4213e2626",
+      "name": "Execute Command1",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        592,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function extractJsonArray(input) {\n  const start = input.indexOf('[');\n  if (start === -1) {\n    throw new Error('JSON array not found');\n  }\n  const jsonPart = input.slice(start);\n  return JSON.parse(jsonPart);\n}\n\nconst raw = $('Execute Command1').first().json.stdout\nconst workflows = extractJsonArray(raw)\n\nreturn { workflows }"
+      },
+      "id": "b76585de-514d-4165-b517-c4bea192f0c4",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "workflows",
+        "options": {}
+      },
+      "id": "b295ce1c-b123-40b9-9ee7-3d2e3f53ddb9",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "binaryPropertyName": "workflow",
+        "options": {
+          "format": true,
+          "fileName": "={{ $json.name }}"
+        }
+      },
+      "id": "08cff101-25de-4f03-9418-78830709f757",
+      "name": "Convert to File1",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $now.format('dd-MM-yyyy_HH-mm-ss') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1iNM4rwNiLhB06RA-rQpj-8NXrt0xq6Te",
+          "mode": "list",
+          "cachedResultName": "Calliope_n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1iNM4rwNiLhB06RA-rQpj-8NXrt0xq6Te"
+        },
+        "options": {}
+      },
+      "id": "82923208-397f-4182-8135-3ccd6ce2c85f",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        816,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "workflow",
+        "name": "=",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "f4a10714-840e-413d-b9cf-8dca9ec9f00d",
+      "name": "Upload file1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1696,
+        512
+      ]
+    }
+  ],
+  "connections": {
+    "Execute Command": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "02373254-a9ae-455e-961f-c5f703a77c1e",
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-20T11:23:16.585Z",
+      "createdAt": "2026-01-20T11:23:16.585Z",
+      "role": "workflow:owner",
+      "workflowId": "nLzKTCorSrzYrAJI",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -1,0 +1,205 @@
+{
+  "updatedAt": "2024-06-19T13:16:42.000Z",
+  "createdAt": "2024-06-07T00:11:31.270Z",
+  "id": "0o4jH4lDGEe5lkvg",
+  "name": "Risteco",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "name": "Test",
+        "language": "python",
+        "pythonCode": "# Example: convert the incoming query to uppercase and return from flask import Flask, request, jsonify\nimport requests\n\napp = Flask(__name__)\n\n@app.route('/call_webhook', methods=['POST'])\ndef call_webhook():\n    data = request.json\n    full_name = data.get('full_name')\n    phone = data.get('phone')\n    restaurant = data.get('restaurant')\n\n    webhook_url = 'https://n8n.raffaelelugibello.it/webhook-test/ff933606-8d28-4d43-9a3c-9d0698df748e'\n    payload = {\n        'full_name': full_name,\n        'phone': phone,\n        'restaurant': restaurant\n    }\n\n    try:\n        response = requests.post(webhook_url, json=payload)\n        response.raise_for_status()\n        return jsonify(response.json())\n    except requests.exceptions.RequestException as e:\n        return jsonify({'error': str(e)}), 400\n\nif __name__ == '__main__':\n    app.run(debug=True)\nit\nreturn query.upper()"
+      },
+      "id": "ca86a946-5448-4a5c-8fe7-bde22611595e",
+      "name": "Custom Code Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "30d48595-a9b3-48ff-8ec7-7a220500b13a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        920,
+        500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Ci2ocbvw7JJ5myHs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "de1ea8a0-f8d5-4abb-b269-445e9a4f5739",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1380,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f5f74f89-50b0-4c50-a417-9b5afdec5f93",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.5,
+      "position": [
+        920,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "path": "ff933606-8d28-4d43-9a3c-9d0698df748e",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0ac62d90-f20f-4884-8b9d-2030cd13789a",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        580,
+        280
+      ],
+      "webhookId": "ff933606-8d28-4d43-9a3c-9d0698df748e"
+    }
+  ],
+  "connections": {
+    "Custom Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8169c7fd-0e27-428a-8523-95d94aae6936",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2024-06-07T00:11:31.290Z",
+      "createdAt": "2024-06-07T00:11:31.290Z",
+      "role": "workflow:owner",
+      "workflowId": "0o4jH4lDGEe5lkvg",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

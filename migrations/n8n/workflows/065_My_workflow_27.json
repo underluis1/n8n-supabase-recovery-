@@ -1,0 +1,225 @@
+{
+  "updatedAt": "2025-07-10T23:39:35.000Z",
+  "createdAt": "2025-07-10T23:29:29.317Z",
+  "id": "YBWZ9xk7pOulLrZX",
+  "name": "My workflow 27",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "0794e12a-0381-4271-8db4-2309ad2cf3f6",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://registry.npmjs.org/n8n/latest",
+        "options": {
+          "fullResponse": false
+        }
+      },
+      "id": "39d3a421-8bf1-445f-8153-913d89041a58",
+      "name": "Get latest n8n version",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.raffaelelugibello.it/rest/settings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "id": "30418c33-0ceb-4955-8025-3fcb1809ffb0",
+      "name": "Get local n8n version",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        600,
+        0
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "ebbF8krzmhw1avhF",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Get latest n8n version').item.json.version }}",
+              "operation": "notEqual",
+              "value2": "={{ $('Get local n8n version').item.json.data.versionCli }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "147b3c58-5625-419c-b505-932fff8b9763",
+      "name": "Check if version is different",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "cd ~/n8n-docker-caddy && docker compose pull && docker compose up -d && echo \"Aggiornato automaticamente\" > update_log.txt",
+        "cwd": "/root/n8n-docker-caddy"
+      },
+      "id": "c1d5bd88-d712-4fee-81aa-8d9ff81d6098",
+      "name": "SSH - Update n8n",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "bbmSxt6bnw9wSvl1",
+          "name": "SSH Password account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get latest n8n version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get latest n8n version": {
+      "main": [
+        [
+          {
+            "node": "Get local n8n version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get local n8n version": {
+      "main": [
+        [
+          {
+            "node": "Check if version is different",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if version is different": {
+      "main": [
+        [
+          {
+            "node": "SSH - Update n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6a9ac454-f65a-434e-8f6a-85c353d652f7",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-07-10T23:29:29.321Z",
+      "createdAt": "2025-07-10T23:29:29.321Z",
+      "role": "workflow:owner",
+      "workflowId": "YBWZ9xk7pOulLrZX",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

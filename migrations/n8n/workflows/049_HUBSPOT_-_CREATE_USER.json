@@ -1,0 +1,1109 @@
+{
+  "updatedAt": "2025-11-21T09:56:38.000Z",
+  "createdAt": "2025-11-12T15:46:57.341Z",
+  "id": "SGQTHesjnUWVJ4iz",
+  "name": "HUBSPOT - CREATE USER",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "email": "raffaelelugibello+test2@gmail.com",
+        "additionalFields": {
+          "city": "={{ $json.query.city }}",
+          "country": "={{ $json.query.regione }}",
+          "firstName": "={{ $json.query.name }}",
+          "lastName": "={{ $json.query.surname }}",
+          "phoneNumber": "={{ $json.query.phone }}",
+          "postalCode": "={{ $json.query.cap }}",
+          "stateRegion": "",
+          "stateRegionCode": "",
+          "streetAddress": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        -288
+      ],
+      "id": "51d7ba96-28b9-45c8-a663-863c2c16698e",
+      "name": "Create or update a contact",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2eea6cbb-9599-47f4-ad76-b03400fdb249",
+              "name": "id_user_hubspot",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "bc79f711-863c-4f56-b262-bc26b651aeb7",
+              "name": "id_supabase_user",
+              "value": "={{ $('Webhook').item.json.query.id_supabase }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        0
+      ],
+      "id": "0b88158d-ab98-474d-af0b-668543e00b65",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "profiles",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id_supabase_user }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id_user_hubspot",
+              "fieldValue": "={{ $json.id_user_hubspot }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "eb948735-03a4-4e03-8f2e-3b1e0700d53c",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "CgMgk0WRw1Lx9csu",
+          "name": "Rinnai - Ncode"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "register_user",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "22a9dcec-e64f-4ae8-b305-cf77d52d3c3d",
+      "name": "Webhook",
+      "webhookId": "30523737-c424-4dc7-86a3-d1a60229253f",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eLPHcGCtzV6skRoX",
+          "name": "ciaociao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Questo flusso deve essere eseguito quando un utente si registra su supabase.\n\n1- recuperiamo i dati dell'utente e creiamo un nuovo contact su hubspot.\n\n2- Prendiamo in corrispondenza l'id dell'utente su supabase e l'id del nuovo account di hubspot \n\n3- modifichiamo su supabase il campo id_user_hubspot inserendo l'id dell'utente appena creato ",
+        "height": 272,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "5e15e9b2-6649-4b37-a485-e667c29eda60",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotAppToken",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"properties\": {\n    \"email\": \"{{ $json.query.email }}\",\n    \"firstname\": \"{{ $json.query.name }}\",\n    \"lastname\": \"{{ $json.query.surname }}\",\n    \"codice_fiscale_form_garanzia\": \"{{ $json.query.codice_fiscale }}\",\n    \"cap\": \"{{ $json.query.cap }}\",\n    \"address\": \"{{ $json.query.via }}\",\n    \"numero_civico\": \"{{ $json.query.numero_civico }}\",\n    \"state\": \"{{ $json.query.regione }}\",\n    \"comune\": \"{{ $json.query.city }}\",\n    \"provincia\": \"{{ $json.query.provincia }}\",\n    \"phone\": \"{{ $json.query.phone }}\"\n  }\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "7f099dce-b98a-4894-a929-ece967c4fe28",
+      "name": "create contact",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/Companies",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotAppToken",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"properties\": {\n   \"p_iva\":\"{{ $('Webhook').item.json.query['p.iva'] }}\",\n   \"name\": \"{{ $('Webhook').item.json.query.azienda }}\"\n  },\n\n\"associations\": [\n    {\n      \"to\": { \"id\": \"{{ $json.id }}\" },\n      \"types\": [{ \n        \"associationCategory\": \"HUBSPOT_DEFINED\",\n        \"associationTypeId\": 2 \n      }]\n    }\n  ]\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        304
+      ],
+      "id": "b7a6b29b-0d7b-443c-8eff-bffb04d37310",
+      "name": "Create Companies",
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "jSTOqikAllxi1WBE",
+          "name": "HubSpot account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Create or update a contact": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "create contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create contact": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Companies": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Create or update a contact": [
+      {
+        "json": {
+          "vid": 174451276194,
+          "canonical-vid": 174451276194,
+          "merged-vids": [],
+          "portal-id": 8229130,
+          "is-contact": true,
+          "properties": {
+            "hs_is_unworked": {
+              "value": "true",
+              "versions": [
+                {
+                  "value": "true",
+                  "source-type": "CALCULATED",
+                  "source-id": "CalculatedPropertyComputer",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "country": {
+              "value": "Italia / Lecce",
+              "versions": [
+                {
+                  "value": "Italia / Lecce",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604628,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "firstname": {
+              "value": "Raffaele",
+              "versions": [
+                {
+                  "value": "Raffaele",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604628,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "city": {
+              "value": "Melendugno",
+              "versions": [
+                {
+                  "value": "Melendugno",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604628,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_pipeline": {
+              "value": "contacts-lifecycle-pipeline",
+              "versions": [
+                {
+                  "value": "contacts-lifecycle-pipeline",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_prospecting_agent_total_enrolled_count": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "InitialRollupProperties",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_membership_has_accessed_private_content": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "CalculatedPropertyComputer",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "createdate": {
+              "value": "1762962604637",
+              "versions": [
+                {
+                  "value": "1762962604637",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_registered_member": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "CalculatedPropertyComputer",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_associated_target_accounts": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "InitialRollupProperties",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_object_source_label": {
+              "value": "INTEGRATION",
+              "versions": [
+                {
+                  "value": "INTEGRATION",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_sequences_actively_enrolled_count": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "InitialRollupProperties",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_marketable_until_renewal": {
+              "value": "false",
+              "versions": [
+                {
+                  "value": "false",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_marketable_status": {
+              "value": "false",
+              "versions": [
+                {
+                  "value": "false",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_object_source_id": {
+              "value": "23421172",
+              "versions": [
+                {
+                  "value": "23421172",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_prospecting_agent_actively_enrolled_count": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "InitialRollupProperties",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_email_domain": {
+              "value": "gmail.com",
+              "versions": [
+                {
+                  "value": "gmail.com",
+                  "source-type": "CALCULATED",
+                  "source-id": null,
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_currently_enrolled_in_prospecting_agent": {
+              "value": "false",
+              "versions": [
+                {
+                  "value": "false",
+                  "source-type": "CALCULATED",
+                  "source-id": "CalculatedPropertyComputer",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "email": {
+              "value": "raffaelelugibello+test2@gmail.com",
+              "versions": [
+                {
+                  "value": "raffaelelugibello+test2@gmail.com",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "lastmodifieddate": {
+              "value": "1762962604637",
+              "versions": [
+                {
+                  "value": "1762962604637",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_full_name_or_email": {
+              "value": "Raffaele Lugibello test",
+              "versions": [
+                {
+                  "value": "Raffaele Lugibello test",
+                  "source-type": "CALCULATED",
+                  "source-id": "CalculatedPropertyComputer",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "lastname": {
+              "value": "Lugibello test",
+              "versions": [
+                {
+                  "value": "Lugibello test",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604628,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_all_contact_vids": {
+              "value": "174451276194",
+              "versions": [
+                {
+                  "value": "174451276194",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_is_contact": {
+              "value": "true",
+              "versions": [
+                {
+                  "value": "true",
+                  "source-type": "CALCULATED",
+                  "source-id": null,
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_object_id": {
+              "value": "174451276194",
+              "versions": [
+                {
+                  "value": "174451276194",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_object_source": {
+              "value": "INTEGRATION",
+              "versions": [
+                {
+                  "value": "INTEGRATION",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "hs_lifecyclestage_lead_date": {
+              "value": "1762962604637",
+              "versions": [
+                {
+                  "value": "1762962604637",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "lifecyclestage": {
+              "value": "lead",
+              "versions": [
+                {
+                  "value": "lead",
+                  "source-type": "INTEGRATION",
+                  "source-id": "23421172",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            },
+            "num_notes": {
+              "value": "0",
+              "versions": [
+                {
+                  "value": "0",
+                  "source-type": "CALCULATED",
+                  "source-id": "InitialRollupProperties",
+                  "source-label": null,
+                  "updated-by-user-id": null,
+                  "timestamp": 1762962604637,
+                  "selected": false,
+                  "data-sensitivity": null,
+                  "is-encrypted": null
+                }
+              ]
+            }
+          },
+          "form-submissions": [],
+          "list-memberships": [],
+          "identity-profiles": [
+            {
+              "vid": 174451276194,
+              "saved-at-timestamp": 1762962604816,
+              "deleted-changed-timestamp": 0,
+              "identities": [
+                {
+                  "type": "EMAIL",
+                  "value": "raffaelelugibello+test2@gmail.com",
+                  "timestamp": 1762962604637,
+                  "is-primary": true
+                },
+                {
+                  "type": "LEAD_GUID",
+                  "value": "0350cae9-ca34-4b60-84ea-f4aca9a75607",
+                  "timestamp": 1762962604813
+                }
+              ]
+            }
+          ],
+          "merge-audits": [],
+          "isNew": true
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.raffaelelugibello.it",
+            "user-agent": "PostmanRuntime/7.49.0",
+            "content-length": "0",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br",
+            "auth": "ciaociao",
+            "cache-control": "no-cache",
+            "postman-token": "bde8e7e4-9cb8-43cf-b8f3-41f48d0765dd",
+            "via": "1.1 Caddy",
+            "x-forwarded-for": "185.187.243.105",
+            "x-forwarded-host": "n8n.raffaelelugibello.it",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {
+            "name": "raffaele",
+            "surname": "lugibello",
+            "id_supabase": "d5a3f1ff-3e7a-412a-a437-74ddb36bca19",
+            "codice_fiscale": "lgbrfl00b29g751z",
+            "via": "via tancredi ",
+            "numero_civico": "30",
+            "regione": "Puglia",
+            "city": "Melendugno",
+            "provincia": "Lecce",
+            "phone": "3885731449",
+            "cap": "73026",
+            "email": "raffaelelugibello+33@gmail.com",
+            "azienda": "Ncode Studio",
+            "p.iva": "12345678"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.raffaelelugibello.it/webhook-test/register_user",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "5d7fbc85-1f6d-4a18-9a60-5a6ba5432639",
+  "activeVersionId": "5d7fbc85-1f6d-4a18-9a60-5a6ba5432639",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2025-11-12T15:46:57.344Z",
+      "createdAt": "2025-11-12T15:46:57.344Z",
+      "role": "workflow:owner",
+      "workflowId": "SGQTHesjnUWVJ4iz",
+      "projectId": "0AmEo4NBEOscZ3Iq",
+      "project": {
+        "updatedAt": "2024-10-14T23:37:33.647Z",
+        "createdAt": "2024-10-14T23:37:33.647Z",
+        "id": "0AmEo4NBEOscZ3Iq",
+        "name": "raffaele lugibello <raffaelelugibello@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2024-10-14T23:37:33.649Z",
+            "createdAt": "2024-10-14T23:37:33.649Z",
+            "userId": "92cb5655-bd06-47de-bace-3df5438bc30e",
+            "projectId": "0AmEo4NBEOscZ3Iq",
+            "user": {
+              "updatedAt": "2026-01-27T14:16:12.000Z",
+              "createdAt": "2024-05-22T00:23:19.904Z",
+              "id": "92cb5655-bd06-47de-bace-3df5438bc30e",
+              "email": "raffaelelugibello@gmail.com",
+              "firstName": "raffaele",
+              "lastName": "lugibello",
+              "personalizationAnswers": {
+                "companyType": "personal",
+                "reportedSource": "google",
+                "version": "v4",
+                "personalization_survey_submitted_at": "2024-05-22T01:09:14.581Z",
+                "personalization_survey_n8n_version": "1.41.1"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "yaoggJbM3me6df8R",
+                "isOnboarded": true,
+                "userActivatedAt": 1728949053911,
+                "npsSurvey": {
+                  "waitingForResponse": true,
+                  "ignoredCount": 1,
+                  "lastShownAt": 1768926632479
+                },
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-01-26",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2025-11-12T12:01:38.071Z",
+      "createdAt": "2025-11-12T12:01:38.071Z",
+      "id": "XoKPw6Lv8txipfRR",
+      "name": "hubspot rinnai"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2025-12-09T16:31:40.681Z",
+    "createdAt": "2025-12-09T16:31:40.681Z",
+    "versionId": "5d7fbc85-1f6d-4a18-9a60-5a6ba5432639",
+    "workflowId": "SGQTHesjnUWVJ4iz",
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "appToken",
+          "email": "raffaelelugibello+test2@gmail.com",
+          "additionalFields": {
+            "city": "={{ $json.query.city }}",
+            "country": "={{ $json.query.regione }}",
+            "firstName": "={{ $json.query.name }}",
+            "lastName": "={{ $json.query.surname }}",
+            "phoneNumber": "={{ $json.query.phone }}",
+            "postalCode": "={{ $json.query.cap }}",
+            "stateRegion": "",
+            "stateRegionCode": "",
+            "streetAddress": ""
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.hubspot",
+        "typeVersion": 2.2,
+        "position": [
+          384,
+          -288
+        ],
+        "id": "51d7ba96-28b9-45c8-a663-863c2c16698e",
+        "name": "Create or update a contact",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2eea6cbb-9599-47f4-ad76-b03400fdb249",
+                "name": "id_user_hubspot",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "bc79f711-863c-4f56-b262-bc26b651aeb7",
+                "name": "id_supabase_user",
+                "value": "={{ $('Webhook').item.json.query.id_supabase }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          464,
+          0
+        ],
+        "id": "0b88158d-ab98-474d-af0b-668543e00b65",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "tableId": "profiles",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "id",
+                "condition": "eq",
+                "keyValue": "={{ $json.id_supabase_user }}"
+              }
+            ]
+          },
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "id_user_hubspot",
+                "fieldValue": "={{ $json.id_user_hubspot }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          704,
+          0
+        ],
+        "id": "eb948735-03a4-4e03-8f2e-3b1e0700d53c",
+        "name": "Update a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "CgMgk0WRw1Lx9csu",
+            "name": "Rinnai - Ncode"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "register_user",
+          "authentication": "headerAuth",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "22a9dcec-e64f-4ae8-b305-cf77d52d3c3d",
+        "name": "Webhook",
+        "webhookId": "30523737-c424-4dc7-86a3-d1a60229253f",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "eLPHcGCtzV6skRoX",
+            "name": "ciaociao"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "Questo flusso deve essere eseguito quando un utente si registra su supabase.\n\n1- recuperiamo i dati dell'utente e creiamo un nuovo contact su hubspot.\n\n2- Prendiamo in corrispondenza l'id dell'utente su supabase e l'id del nuovo account di hubspot \n\n3- modifichiamo su supabase il campo id_user_hubspot inserendo l'id dell'utente appena creato ",
+          "height": 272,
+          "width": 320
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -336
+        ],
+        "typeVersion": 1,
+        "id": "5e15e9b2-6649-4b37-a485-e667c29eda60",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotAppToken",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"properties\": {\n    \"email\": \"{{ $json.query.email }}\",\n    \"firstname\": \"{{ $json.query.name }}\",\n    \"lastname\": \"{{ $json.query.surname }}\",\n    \"codice_fiscale_form_garanzia\": \"{{ $json.query.codice_fiscale }}\",\n    \"cap\": \"{{ $json.query.cap }}\",\n    \"address\": \"{{ $json.query.via }}\",\n    \"numero_civico\": \"{{ $json.query.numero_civico }}\",\n    \"state\": \"{{ $json.query.regione }}\",\n    \"comune\": \"{{ $json.query.city }}\",\n    \"provincia\": \"{{ $json.query.provincia }}\",\n    \"phone\": \"{{ $json.query.phone }}\"\n  }\n}\n ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          0
+        ],
+        "id": "7f099dce-b98a-4894-a929-ece967c4fe28",
+        "name": "create contact",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.hubapi.com/crm/v3/objects/Companies",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "hubspotAppToken",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"properties\": {\n   \"p_iva\":\"{{ $('Webhook').item.json.query['p.iva'] }}\",\n   \"name\": \"{{ $('Webhook').item.json.query.azienda }}\"\n  },\n\n\"associations\": [\n    {\n      \"to\": { \"id\": \"{{ $json.id }}\" },\n      \"types\": [{ \n        \"associationCategory\": \"HUBSPOT_DEFINED\",\n        \"associationTypeId\": 2 \n      }]\n    }\n  ]\n}\n ",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          448,
+          304
+        ],
+        "id": "b7a6b29b-0d7b-443c-8eff-bffb04d37310",
+        "name": "Create Companies",
+        "credentials": {
+          "hubspotAppToken": {
+            "id": "jSTOqikAllxi1WBE",
+            "name": "HubSpot account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Create or update a contact": {
+        "main": [
+          []
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Update a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "create contact",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "create contact": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Companies": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  }
+}
