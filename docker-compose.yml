@@ -110,21 +110,25 @@ services:
       bash -c '
         echo "Verifica inizializzazione schema Supabase...";
 
-        # Check se schema esistono già
-        SCHEMA_COUNT=$$(psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name IN ('"'"'auth'"'"', '"'"'storage'"'"', '"'"'realtime'"'"');" 2>/dev/null || echo "0");
+        # Check se le tabelle storage critiche esistono (non solo gli schema)
+        STORAGE_TABLES=$$(psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '"'"'storage'"'"' AND table_name IN ('"'"'buckets'"'"', '"'"'objects'"'"');" 2>/dev/null || echo "0");
 
-        if [ "$$SCHEMA_COUNT" -eq "3" ]; then
-          echo "✓ Schema già inizializzati, skip";
+        if [ "$$STORAGE_TABLES" -eq "2" ]; then
+          echo "✓ Database già inizializzato, skip";
           exit 0;
         fi;
 
-        echo "Inizializzazione schema in corso...";
+        echo "Inizializzazione database in corso...";
 
-        # Esegui script di init
-        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/01-init-roles.sql;
-        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/00-init-schemas.sql;
+        # Esegui script di init (idempotenti)
+        echo "→ Creazione ruoli...";
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/01-init-roles.sql || true;
+
+        echo "→ Creazione schema...";
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/00-init-schemas.sql || true;
 
         # Scarica e applica migrazioni Storage
+        echo "→ Applicazione migrazioni Storage...";
         curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0001-initialmigration.sql |
           psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB};
         curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0002-storage-schema.sql |
