@@ -82,6 +82,70 @@ EOF
 }
 
 # =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+# Fix permessi N8N per Linux
+fix_n8n_permissions() {
+    local n8n_data_dir="docker/n8n/data"
+
+    if [[ ! -d "$n8n_data_dir" ]]; then
+        mkdir -p "$n8n_data_dir"
+    fi
+
+    # Check se giriamo come root o se possiamo fare chown
+    if [[ $EUID -eq 0 ]] || command -v sudo &> /dev/null; then
+        log_info "Configurazione permessi N8N (UID 1000)..."
+
+        # Verifica owner attuale
+        local current_owner=$(stat -c '%u' "$n8n_data_dir" 2>/dev/null || stat -f '%u' "$n8n_data_dir" 2>/dev/null || echo "unknown")
+
+        if [[ "$current_owner" != "1000" ]]; then
+            if [[ $EUID -eq 0 ]]; then
+                chown -R 1000:1000 "$n8n_data_dir" 2>/dev/null || true
+            else
+                sudo chown -R 1000:1000 "$n8n_data_dir" 2>/dev/null || {
+                    log_warning "Impossibile cambiare permessi. N8N potrebbe fallire."
+                    log_info "Esegui manualmente: sudo chown -R 1000:1000 $n8n_data_dir"
+                }
+            fi
+        fi
+    fi
+}
+
+# Validazione post-avvio
+post_start_validation() {
+    local environment=$1
+
+    log_info "Validazione servizi..."
+
+    # Aspetta qualche secondo per l'init container
+    sleep 3
+
+    # Verifica che i container critici siano running
+    local failed=0
+
+    if is_profile_enabled "supabase"; then
+        # Check init container completato
+        local init_status=$(docker inspect "${PROJECT_NAME}-supabase-db-init" --format='{{.State.Status}}' 2>/dev/null || echo "not_found")
+
+        if [[ "$init_status" == "exited" ]]; then
+            local exit_code=$(docker inspect "${PROJECT_NAME}-supabase-db-init" --format='{{.State.ExitCode}}' 2>/dev/null || echo "1")
+            if [[ "$exit_code" == "0" ]]; then
+                log_info "✓ Database Supabase inizializzato"
+            else
+                log_warning "⚠ Init container fallito, controlla i log: docker logs ${PROJECT_NAME}-supabase-db-init"
+                failed=1
+            fi
+        fi
+    fi
+
+    if [[ $failed -eq 1 ]]; then
+        log_warning "Alcuni servizi potrebbero avere problemi. Usa: ./platform.sh status $environment"
+    fi
+}
+
+# =============================================================================
 # COMMAND: UP
 # =============================================================================
 
@@ -96,6 +160,14 @@ cmd_up() {
     # Verifica Docker
     check_docker || exit 1
 
+    # Pre-flight checks e fix automatici
+    log_info "Pre-flight checks..."
+
+    # Fix permessi N8N (necessario su Linux)
+    if is_profile_enabled "n8n"; then
+        fix_n8n_permissions
+    fi
+
     # Ottieni comando compose
     local compose_cmd=$(build_compose_command "$environment" "up" "-d")
 
@@ -107,6 +179,10 @@ cmd_up() {
 
     if [[ $? -eq 0 ]]; then
         log_success "Servizi avviati"
+
+        # Post-start validation
+        post_start_validation "$environment"
+
         echo ""
         log_info "Verifica stato con: ./platform.sh status $environment"
 

@@ -92,6 +92,48 @@ services:
   # SUPABASE - Backend as a Service
   # ---------------------------------------------------------------------------
 
+  # Init container che esegue gli script SQL al primo avvio
+  supabase-db-init:
+    image: supabase/postgres:15.1.1.78
+    container_name: ${PROJECT_NAME:-platform}-supabase-db-init
+    profiles: ["supabase"]
+    networks:
+      - platform-network
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./docker/supabase/volumes/db/init:/init-scripts:ro
+    command: >
+      bash -c '
+        echo "Verifica inizializzazione schema Supabase...";
+
+        # Check se schema esistono già
+        SCHEMA_COUNT=$$(psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name IN ('"'"'auth'"'"', '"'"'storage'"'"', '"'"'realtime'"'"');" 2>/dev/null || echo "0");
+
+        if [ "$$SCHEMA_COUNT" -eq "3" ]; then
+          echo "✓ Schema già inizializzati, skip";
+          exit 0;
+        fi;
+
+        echo "Inizializzazione schema in corso...";
+
+        # Esegui script di init
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/01-init-roles.sql;
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/00-init-schemas.sql;
+
+        # Scarica e applica migrazioni Storage
+        curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0001-initialmigration.sql |
+          psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB};
+        curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0002-storage-schema.sql |
+          psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB};
+
+        echo "✓ Inizializzazione completata";
+      '
+    restart: "no"
+
   supabase-db:
     image: supabase/postgres:15.1.1.78
     container_name: ${PROJECT_NAME:-platform}-supabase-db
@@ -176,6 +218,8 @@ services:
     depends_on:
       supabase-db:
         condition: service_healthy
+      supabase-db-init:
+        condition: service_completed_successfully
 
   supabase-rest:
     image: postgrest/postgrest:v12.0.1
@@ -220,6 +264,8 @@ services:
     depends_on:
       supabase-db:
         condition: service_healthy
+      supabase-db-init:
+        condition: service_completed_successfully
     command: >
       sh -c "/app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server"
 
@@ -247,6 +293,8 @@ services:
     depends_on:
       supabase-db:
         condition: service_healthy
+      supabase-db-init:
+        condition: service_completed_successfully
       supabase-rest:
         condition: service_started
 
