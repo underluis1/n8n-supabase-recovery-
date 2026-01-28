@@ -10,10 +10,12 @@
 
 set -euo pipefail
 
+# Get project root directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/.."
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
 
-source scripts/lib/logger.sh
+source "$PROJECT_ROOT/scripts/lib/logger.sh"
 
 # =============================================================================
 # CONFIGURATION
@@ -29,12 +31,12 @@ fi
 ENVIRONMENT=$1
 
 # Carica environment
-if [[ ! -f "environments/${ENVIRONMENT}/.env" ]]; then
-    log_error "File environment non trovato: environments/${ENVIRONMENT}/.env"
+if [[ ! -f "$PROJECT_ROOT/environments/${ENVIRONMENT}/.env" ]]; then
+    log_error "File environment non trovato: $PROJECT_ROOT/environments/${ENVIRONMENT}/.env"
     exit 1
 fi
 
-source "environments/${ENVIRONMENT}/.env"
+source "$PROJECT_ROOT/environments/${ENVIRONMENT}/.env"
 
 CONTAINER_NAME="${PROJECT_NAME}-supabase-db"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
@@ -88,10 +90,10 @@ log_header "Fix Supabase Schemas - ${ENVIRONMENT}"
 check_container
 
 # 1. Apply role initialization
-execute_sql "docker/supabase/volumes/db/init/01-init-roles.sql" "Creazione ruoli Supabase"
+execute_sql "$PROJECT_ROOT/docker/supabase/volumes/db/init/01-init-roles.sql" "Creazione ruoli Supabase"
 
 # 2. Apply schema initialization
-execute_sql "docker/supabase/volumes/db/init/00-init-schemas.sql" "Creazione schema Supabase"
+execute_sql "$PROJECT_ROOT/docker/supabase/volumes/db/init/00-init-schemas.sql" "Creazione schema Supabase"
 
 # 3. Apply Storage migrations
 log_info "Download e applicazione migrazioni Storage..."
