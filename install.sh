@@ -97,9 +97,7 @@ select_services() {
     echo "  5) Tutto (n8n + Supabase + backup)"
     echo ""
     echo -n "Scelta [5]: "
-    if ! read -r service_choice; then
-        service_choice=5
-    fi
+    read -r service_choice || true
     service_choice=${service_choice:-5}
 
     case $service_choice in
@@ -135,9 +133,9 @@ select_services() {
     esac
 
     log_success "Servizi selezionati:"
-    [[ $INSTALL_N8N == true ]] && log_info "  - n8n"
-    [[ $INSTALL_SUPABASE == true ]] && log_info "  - Supabase"
-    [[ $INSTALL_BACKUP == true ]] && log_info "  - Backup"
+    [[ $INSTALL_N8N == true ]] && log_info "  - n8n" || true
+    [[ $INSTALL_SUPABASE == true ]] && log_info "  - Supabase" || true
+    [[ $INSTALL_BACKUP == true ]] && log_info "  - Backup" || true
 }
 
 # =============================================================================
@@ -158,11 +156,15 @@ configure_backup() {
 
         echo ""
         echo -n "Schedule cron [0 2 * * *]: "
-        read -r backup_schedule
+        if ! read -r backup_schedule; then
+            backup_schedule="0 2 * * *"
+        fi
         BACKUP_SCHEDULE=${backup_schedule:-"0 2 * * *"}
 
         echo -n "Retention in giorni [30]: "
-        read -r backup_retention
+        if ! read -r backup_retention; then
+            backup_retention=30
+        fi
         BACKUP_RETENTION_DAYS=${backup_retention:-30}
 
         echo ""
