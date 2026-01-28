@@ -127,12 +127,10 @@ services:
         echo "→ Creazione schema...";
         psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/00-init-schemas.sql || true;
 
-        # Scarica e applica migrazioni Storage
+        # Applica migrazioni Storage
         echo "→ Applicazione migrazioni Storage...";
-        curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0001-initialmigration.sql |
-          psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB};
-        curl -sf https://raw.githubusercontent.com/supabase/storage/master/migrations/tenant/0002-storage-schema.sql |
-          psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB};
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/storage-migrations/0001-initialmigration.sql;
+        psql -h supabase-db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-scripts/storage-migrations/0002-storage-schema.sql;
 
         echo "✓ Inizializzazione completata";
       '
