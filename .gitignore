@@ -15,6 +15,10 @@ backups/
 *.sql
 *.sql.gz
 
+# EXCEPT: Keep init SQL scripts and migrations
+!docker/supabase/volumes/db/init/*.sql
+!migrations/**/*.sql
+
 # Docker volumes
 docker/n8n/data/
 docker/supabase/volumes/db/data/
